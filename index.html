@@ -2262,7 +2262,7 @@ button {
 
 ========================================================= */
 
-const GROQ_API_KEY = "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";
+const GROQ_API_KEY = "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";
 
 
 /*
@@ -2297,6 +2297,8 @@ const AUTO_SCROLL_KEY =
 let chats = loadChats();
 
 let currentChatId = null;
+
+let currentUid = null;
 
 let pendingDeleteId = null;
 
@@ -2474,6 +2476,34 @@ function saveChats() {
 
     );
 
+
+    if (
+        currentUid &&
+        window.mistCloud
+    ) {
+
+        window.mistCloud
+
+            .saveChats(
+                currentUid,
+                chats
+            )
+
+            .catch(
+
+                function(error) {
+
+                    console.error(
+                        "Cloud sync failed:",
+                        error
+                    );
+
+                }
+
+            );
+
+    }
+
 }
 
 
@@ -2492,6 +2522,100 @@ function createId() {
     );
 
 }
+
+
+/* =========================================================
+   CLOUD SYNC (GOOGLE ACCOUNT)
+
+   Listens for auth state changes dispatched by the Firebase
+   module script. When a user signs in, their chats are
+   pulled from the cloud (or, if this is their first sync,
+   whatever is currently on this device is pushed up).
+========================================================= */
+
+async function syncChatsFromCloud() {
+
+    if (
+        !currentUid ||
+        !window.mistCloud
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const cloudChats =
+            await window.mistCloud.loadChats(
+                currentUid
+            );
+
+
+        if (
+            cloudChats &&
+            cloudChats.length
+        ) {
+
+            chats = cloudChats;
+
+            localStorage.setItem(
+
+                CHAT_STORAGE_KEY,
+
+                JSON.stringify(chats)
+
+            );
+
+        } else if (
+            chats.length
+        ) {
+
+            await window.mistCloud.saveChats(
+
+                currentUid,
+
+                chats
+
+            );
+
+        }
+
+
+        renderChatList();
+
+    } catch (error) {
+
+        console.error(
+            "Could not sync chats from the cloud:",
+            error
+        );
+
+    }
+
+}
+
+
+window.addEventListener(
+
+    "mist:auth-state",
+
+    function(event) {
+
+        currentUid =
+            event.detail.uid;
+
+
+        if (currentUid) {
+
+            syncChatsFromCloud();
+
+        }
+
+    }
+
+);
 
 
 /* =========================================================
@@ -6056,6 +6180,13 @@ centerInput.focus();
         onAuthStateChanged
     } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-auth.js";
 
+    import {
+        getFirestore,
+        doc,
+        getDoc,
+        setDoc
+    } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-firestore.js";
+
 
     /* =========================================================
        FIREBASE CONFIGURATION
@@ -6080,6 +6211,68 @@ centerInput.focus();
 
     const googleProvider =
         new GoogleAuthProvider();
+
+    const db =
+        getFirestore(firebaseApp);
+
+
+    /* =========================================================
+       CLOUD CHAT SYNC
+
+       Exposed on window so the main (non-module) app script
+       can push/pull chats without needing its own Firebase
+       imports.
+    ========================================================= */
+
+    window.mistCloud = {
+
+        saveChats: function(uid, chatsData) {
+
+            return setDoc(
+
+                doc(db, "mistChats", uid),
+
+                {
+                    chats: chatsData,
+                    updatedAt: Date.now()
+                }
+
+            );
+
+        },
+
+        loadChats: function(uid) {
+
+            return getDoc(
+
+                doc(db, "mistChats", uid)
+
+            ).then(
+
+                function(snapshot) {
+
+                    if (!snapshot.exists()) {
+
+                        return null;
+
+                    }
+
+
+                    const data =
+                        snapshot.data();
+
+
+                    return Array.isArray(data.chats)
+                        ? data.chats
+                        : [];
+
+                }
+
+            );
+
+        }
+
+    };
 
 
     /* =========================================================
@@ -6223,6 +6416,31 @@ centerInput.focus();
                 renderSignedOut();
 
             }
+
+
+            window.dispatchEvent(
+
+                new CustomEvent(
+
+                    "mist:auth-state",
+
+                    {
+
+                        detail: {
+
+                            signedIn: !!user,
+
+                            uid: user
+                                ? user.uid
+                                : null
+
+                        }
+
+                    }
+
+                )
+
+            );
 
         }
 
