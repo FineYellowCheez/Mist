@@ -10,6 +10,15 @@
     href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='black'/%3E%3Cg fill='none' stroke='%23f3f3f3' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M32 32 C 28 29 28 21 35 19 C 40 18 44 20 44 24'/%3E%3Cpath d='M32 32 C 28 29 28 21 35 19 C 40 18 44 20 44 24' transform='rotate(120 32 32)'/%3E%3Cpath d='M32 32 C 28 29 28 21 35 19 C 40 18 44 20 44 24' transform='rotate(240 32 32)'/%3E%3C/g%3E%3Ccircle cx='32' cy='32' r='4' fill='%23f3f3f3'/%3E%3C/svg%3E"
 >
 
+<!-- KaTeX: renders math notation (sqrt, fractions, exponents, etc.) -->
+<link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
+>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+
 <style>
 :root {
     --bg: #343434;
@@ -694,17 +703,54 @@ button {
     width: min(780px, 100%);
     margin: 0 auto 22px;
     display: flex;
-    gap: 10px;
+    flex-direction: column;
+    gap: 6px;
 }
 
 .message-row.user {
-    justify-content: flex-end;
+    align-items: flex-end;
 }
 
 .message-row.assistant {
-    flex-direction: column-reverse;
     align-items: flex-start;
-    gap: 8px;
+}
+
+.message-actions {
+    display: flex;
+}
+
+.message-copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: #8a8a8a;
+    padding: 4px 7px;
+    font-size: 12px;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.message-copy:hover {
+    background: #3d3d3d;
+    color: #ddd;
+}
+
+.message-copy.copied {
+    color: #ddd;
+}
+
+.message-copy svg {
+    width: 14px;
+    height: 14px;
+}
+
+.message-row.assistant .assistant-logo {
+    margin-top: 2px;
 }
 
 .message {
@@ -827,16 +873,23 @@ button {
     font-weight: 700;
 }
 
+.message.assistant .katex {
+    color: #f2f2f2;
+    font-size: 1.05em;
+}
+
+.message.assistant .katex-display {
+    margin: 12px 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
 .assistant-logo,
 .thinking-logo {
     width: 32px;
     height: 32px;
     min-width: 32px;
     margin-top: 2px;
-}
-
-.message-row.assistant .assistant-logo {
-    margin-top: 0;
 }
 
 .assistant-logo svg,
@@ -2999,6 +3052,90 @@ function logoSVG() {
 
 
 /* =========================================================
+   MESSAGE COPY BUTTON
+========================================================= */
+
+function createCopyButton(getText) {
+
+    const button =
+        document.createElement("button");
+
+    button.type =
+        "button";
+
+    button.className =
+        "message-copy";
+
+    button.setAttribute(
+        "aria-label",
+        "Copy message"
+    );
+
+    button.innerHTML =
+
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
+        'stroke-linecap="round" stroke-linejoin="round">' +
+        '<rect x="9" y="9" width="11" height="11" rx="2"></rect>' +
+        '<path d="M5 15V5a2 2 0 0 1 2-2h10"></path>' +
+        '</svg>' +
+        '<span>Copy</span>';
+
+
+    button.addEventListener(
+
+        "click",
+
+        async function() {
+
+            const text =
+                typeof getText === "function"
+                    ? getText()
+                    : getText;
+
+            await copyToClipboard(
+                text
+            );
+
+
+            const label =
+                button.querySelector("span");
+
+            label.textContent =
+                "Copied!";
+
+            button.classList.add(
+                "copied"
+            );
+
+
+            setTimeout(
+
+                function() {
+
+                    label.textContent =
+                        "Copy";
+
+                    button.classList.remove(
+                        "copied"
+                    );
+
+                },
+
+                1400
+
+            );
+
+        }
+
+    );
+
+
+    return button;
+
+}
+
+
+/* =========================================================
    RENDER SAVED MESSAGES
 ========================================================= */
 
@@ -3068,7 +3205,9 @@ function appendMessage(
 
     shouldScroll = true,
 
-    generating = false
+    generating = false,
+
+    copyText = content
 
 ) {
 
@@ -3077,6 +3216,37 @@ function appendMessage(
 
     row.className =
         "message-row " + role;
+
+
+    const bubble =
+        document.createElement("div");
+
+    bubble.className =
+        "message " + role;
+
+    bubble.textContent =
+        content;
+
+    row.appendChild(
+        bubble
+    );
+
+
+    const actions =
+        document.createElement("div");
+
+    actions.className =
+        "message-actions";
+
+    actions.appendChild(
+        createCopyButton(
+            () => copyText
+        )
+    );
+
+    row.appendChild(
+        actions
+    );
 
 
     if (
@@ -3103,20 +3273,6 @@ function appendMessage(
 
     }
 
-
-    const bubble =
-        document.createElement("div");
-
-    bubble.className =
-        "message " + role;
-
-    bubble.textContent =
-        content;
-
-
-    row.appendChild(
-        bubble
-    );
 
     messages.appendChild(
         row
@@ -3151,6 +3307,34 @@ function appendStoredAssistant(content) {
         "message-row assistant";
 
 
+    const container =
+        document.createElement("div");
+
+    container.className =
+        "message assistant";
+
+    row.appendChild(
+        container
+    );
+
+
+    const actions =
+        document.createElement("div");
+
+    actions.className =
+        "message-actions";
+
+    actions.appendChild(
+        createCopyButton(
+            () => content
+        )
+    );
+
+    row.appendChild(
+        actions
+    );
+
+
     const logo =
         document.createElement("div");
 
@@ -3160,20 +3344,8 @@ function appendStoredAssistant(content) {
     logo.innerHTML =
         logoSVG();
 
-
-    const container =
-        document.createElement("div");
-
-    container.className =
-        "message assistant";
-
-
     row.appendChild(
         logo
-    );
-
-    row.appendChild(
-        container
     );
 
 
@@ -3382,6 +3554,41 @@ function displayLanguage(language) {
    CREATE CODE BLOCK
 ========================================================= */
 
+async function copyToClipboard(text) {
+
+    try {
+
+        await navigator.clipboard.writeText(
+            text
+        );
+
+    } catch {
+
+        const temp =
+            document.createElement(
+                "textarea"
+            );
+
+        temp.value =
+            text;
+
+        document.body.appendChild(
+            temp
+        );
+
+        temp.select();
+
+        document.execCommand(
+            "copy"
+        );
+
+        temp.remove();
+
+    }
+
+}
+
+
 function createCodeBlock(
 
     language,
@@ -3420,35 +3627,9 @@ function createCodeBlock(
 
         async function() {
 
-            try {
-
-                await navigator.clipboard.writeText(
-                    originalCode
-                );
-
-            } catch {
-
-                const temp =
-                    document.createElement(
-                        "textarea"
-                    );
-
-                temp.value =
-                    originalCode;
-
-                document.body.appendChild(
-                    temp
-                );
-
-                temp.select();
-
-                document.execCommand(
-                    "copy"
-                );
-
-                temp.remove();
-
-            }
+            await copyToClipboard(
+                originalCode
+            );
 
 
             copy.textContent =
@@ -3566,7 +3747,37 @@ function renderInlineMarkdown(text) {
 
     let html = text;
 
+    const mathSpans = [];
+
     const codeSpans = [];
+
+
+    function protectMath(pattern) {
+
+        html = html.replace(
+
+            pattern,
+
+            function(match) {
+
+                mathSpans.push(match);
+
+                return "\u0000MATH" + (mathSpans.length - 1) + "\u0000";
+
+            }
+
+        );
+
+    }
+
+
+    protectMath(/\$\$[\s\S]+?\$\$/g);
+
+    protectMath(/\\\[[\s\S]+?\\\]/g);
+
+    protectMath(/\\\([\s\S]+?\\\)/g);
+
+    protectMath(/\$[^$\n]+?\$/g);
 
 
     html = html.replace(
@@ -3612,6 +3823,19 @@ function renderInlineMarkdown(text) {
         function(match, index) {
 
             return "<code>" + codeSpans[Number(index)] + "</code>";
+
+        }
+
+    );
+
+
+    html = html.replace(
+
+        /\u0000MATH(\d+)\u0000/g,
+
+        function(match, index) {
+
+            return mathSpans[Number(index)];
 
         }
 
@@ -3957,6 +4181,65 @@ function splitMarkdownBlocks(text) {
 
 
 /* =========================================================
+   MATH RENDERING (KATEX)
+
+   Scans an element for $...$ / $$...$$ / \(...\) / \[...\]
+   delimiters and renders them as proper math notation
+   (sqrt, fractions, exponents, etc.). Guarded in case the
+   KaTeX script (loaded from a CDN) hasn't finished loading
+   yet when this is first called.
+========================================================= */
+
+function renderMathIn(element) {
+
+    if (
+        typeof window.renderMathInElement !== "function"
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+        window.renderMathInElement(
+
+            element,
+
+            {
+
+                delimiters: [
+
+                    { left: "$$", right: "$$", display: true },
+
+                    { left: "$", right: "$", display: false },
+
+                    { left: "\\(", right: "\\)", display: false },
+
+                    { left: "\\[", right: "\\]", display: true }
+
+                ],
+
+                throwOnError: false
+
+            }
+
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Math rendering failed:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
    RENDER SAVED FORMATTED CONTENT
 ========================================================= */
 
@@ -4000,6 +4283,8 @@ function renderFormattedContent(
                     renderMarkdown(
                         part.content
                     );
+
+                renderMathIn(element);
 
 
                 container.appendChild(
@@ -4285,6 +4570,8 @@ async function typeAssistantResponse(
                     renderMarkdown(
                         block
                     );
+
+                renderMathIn(blockElement);
 
             }
 
@@ -4795,6 +5082,38 @@ async function sendMessage(text) {
             "message-row assistant";
 
 
+        const container =
+            document.createElement(
+                "div"
+            );
+
+        container.className =
+            "message assistant";
+
+        row.appendChild(
+            container
+        );
+
+
+        const actions =
+            document.createElement(
+                "div"
+            );
+
+        actions.className =
+            "message-actions";
+
+        actions.appendChild(
+            createCopyButton(
+                () => reply
+            )
+        );
+
+        row.appendChild(
+            actions
+        );
+
+
         const logo =
             document.createElement(
                 "div"
@@ -4806,22 +5125,8 @@ async function sendMessage(text) {
         logo.innerHTML =
             logoSVG();
 
-
-        const container =
-            document.createElement(
-                "div"
-            );
-
-        container.className =
-            "message assistant";
-
-
         row.appendChild(
             logo
-        );
-
-        row.appendChild(
-            container
         );
 
 
@@ -4880,7 +5185,9 @@ async function sendMessage(text) {
 
                 false,
 
-                true
+                true,
+
+                message
 
             );
 
@@ -5016,10 +5323,18 @@ async function requestGroq(
                                     "--- for a divider, and lists), but only when it fits the content — " +
                                     "do not force formatting onto a short or simple reply. " +
 
+                                    "For any mathematical expression — square roots, fractions, " +
+                                    "exponents, subscripts, summations, integrals, or any formula — " +
+                                    "always write it in LaTeX using $...$ for an inline expression or " +
+                                    "$$...$$ on its own line for a larger displayed expression (for " +
+                                    "example $\\sqrt{x}$ or $\\frac{a}{b}$), rather than plain text " +
+                                    "approximations like sqrt(x) or a/b. " +
+
                                     "Any code, command, file content, or configuration — even a single " +
                                     "line or a variable/file name that represents code — must always be " +
                                     "placed inside a fenced Markdown code block with the correct language " +
-                                    "identifier, never written inline as plain sentence text. " +
+                                    "identifier, never written inline as plain sentence text and never " +
+                                    "left outside of a code block for any reason. " +
 
                                     "For example, use ```html for HTML, ```css for CSS, " +
 
