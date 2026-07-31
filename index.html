@@ -682,6 +682,107 @@ button {
 
 
 /* =========================================================
+   MODEL SELECTOR
+========================================================= */
+
+.model-selector-row {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 10px;
+}
+
+.model-selector {
+    position: relative;
+}
+
+.model-selector-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #cfcfcf;
+    padding: 6px 10px;
+    font-size: 13px;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.model-selector-button:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+}
+
+.model-selector-chevron {
+    width: 14px;
+    height: 14px;
+    transition: transform 0.15s ease;
+}
+
+.model-selector.open .model-selector-chevron {
+    transform: rotate(180deg);
+}
+
+.model-dropdown {
+    position: absolute;
+    left: 0;
+    bottom: calc(100% + 8px);
+    min-width: 190px;
+    background: #303030;
+    border: 1px solid #4a4a4a;
+    border-radius: 10px;
+    padding: 6px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+    display: none;
+    flex-direction: column;
+    gap: 2px;
+    z-index: 20;
+}
+
+.model-selector.open .model-dropdown {
+    display: flex;
+}
+
+.model-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: #e7e7e7;
+    padding: 9px 10px;
+    font-size: 13px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.model-option:hover {
+    background: #3d3d3d;
+}
+
+.model-option.selected {
+    color: #fff;
+    font-weight: 600;
+}
+
+.model-option-check {
+    width: 15px;
+    height: 15px;
+    min-width: 15px;
+    opacity: 0;
+}
+
+.model-option.selected .model-option-check {
+    opacity: 1;
+}
+
+
+/* =========================================================
    MESSAGES
 ========================================================= */
 
@@ -1885,6 +1986,50 @@ button {
 
             </div>
 
+
+            <div class="model-selector-row">
+
+                <div
+                    class="model-selector"
+                    id="centerModelSelector"
+                >
+
+                    <button
+                        class="model-selector-button"
+                        id="centerModelButton"
+                        type="button"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                    >
+
+                        <span
+                            class="model-selector-label"
+                            id="centerModelLabel"
+                        ></span>
+
+                        <svg
+                            class="model-selector-chevron"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2.2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <path d="M6 9l6 6 6-6" />
+                        </svg>
+
+                    </button>
+
+                    <div
+                        class="model-dropdown"
+                        id="centerModelDropdown"
+                    ></div>
+
+                </div>
+
+            </div>
+
         </div>
 
 
@@ -1934,6 +2079,50 @@ button {
                     </svg>
 
                 </button>
+
+            </div>
+
+
+            <div class="model-selector-row">
+
+                <div
+                    class="model-selector"
+                    id="bottomModelSelector"
+                >
+
+                    <button
+                        class="model-selector-button"
+                        id="bottomModelButton"
+                        type="button"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                    >
+
+                        <span
+                            class="model-selector-label"
+                            id="bottomModelLabel"
+                        ></span>
+
+                        <svg
+                            class="model-selector-chevron"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2.2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <path d="M6 9l6 6 6-6" />
+                        </svg>
+
+                    </button>
+
+                    <div
+                        class="model-dropdown"
+                        id="bottomModelDropdown"
+                    ></div>
+
+                </div>
 
             </div>
 
@@ -2342,6 +2531,9 @@ const NOTES_STORAGE_KEY =
 const AUTO_SCROLL_KEY =
     "mist_auto_scroll_v1";
 
+const MODEL_STORAGE_KEY =
+    "mist_selected_model_v1";
+
 
 /* =========================================================
    STATE
@@ -2357,6 +2549,86 @@ let pendingDeleteId = null;
 
 let autoScroll =
     localStorage.getItem(AUTO_SCROLL_KEY) !== "false";
+
+
+/* =========================================================
+   MODELS
+
+   These are presented to the person as different "models,"
+   but they all reach the same underlying API model — each
+   entry just tweaks response pacing and, for Haze 5, adds a
+   personality instruction. All of them still identify as
+   Mist if asked what model they are.
+========================================================= */
+
+const MIST_MODELS = [
+
+    {
+        id: "vapor-4-5",
+        label: "Vapor 4.5",
+        typingChunk: 10,
+        typingInterval: 3,
+        extraDelay: 0,
+        personaPrompt: ""
+    },
+
+    {
+        id: "vapor-4-4",
+        label: "Vapor 4.4",
+        typingChunk: 7,
+        typingInterval: 4,
+        extraDelay: 550,
+        personaPrompt: ""
+    },
+
+    {
+        id: "vapor-4-3",
+        label: "Vapor 4.3",
+        typingChunk: 5,
+        typingInterval: 5,
+        extraDelay: 1200,
+        personaPrompt: ""
+    },
+
+    {
+        id: "haze-5",
+        label: "Haze 5",
+        typingChunk: 10,
+        typingInterval: 3,
+        extraDelay: 0,
+        personaPrompt:
+            "Lean into a warmer, more casual, more human-like " +
+            "personality than usual — relaxed phrasing, genuine " +
+            "warmth, a bit of humor where it fits — while staying " +
+            "clear and helpful."
+    }
+
+];
+
+
+let selectedModelId =
+    localStorage.getItem(MODEL_STORAGE_KEY) ||
+    MIST_MODELS[0].id;
+
+
+function getSelectedModel() {
+
+    return (
+
+        MIST_MODELS.find(
+
+            model =>
+                model.id === selectedModelId
+
+        )
+
+        ||
+
+        MIST_MODELS[0]
+
+    );
+
+}
 
 
 /* =========================================================
@@ -4345,6 +4617,9 @@ function typeText(
 
             let index = 0;
 
+            const model =
+                getSelectedModel();
+
 
             element.classList.add(
                 "typewriter-cursor"
@@ -4383,7 +4658,7 @@ function typeText(
                         const chunk =
                             text.slice(
                                 index,
-                                index + 10
+                                index + model.typingChunk
                             );
 
 
@@ -4403,7 +4678,7 @@ function typeText(
 
                     },
 
-                    3
+                    model.typingInterval
 
                 );
 
@@ -5070,6 +5345,24 @@ async function sendMessage(text) {
             );
 
 
+        const extraDelay =
+            getSelectedModel().extraDelay;
+
+        if (extraDelay > 0) {
+
+            await new Promise(
+
+                resolve =>
+                    setTimeout(
+                        resolve,
+                        extraDelay
+                    )
+
+            );
+
+        }
+
+
         thinking.stop();
 
 
@@ -5276,6 +5569,49 @@ async function requestGroq(
     }
 
 
+    const activeModel =
+        getSelectedModel();
+
+    const systemPrompt =
+
+        "You are Mist, a helpful, thoughtful, intelligent AI assistant. " +
+
+        "Give clear and useful answers. " +
+
+        "Use Markdown formatting where it genuinely helps readability " +
+
+        "(headings with # / ##, **bold**, *italic*, tables with | columns, " +
+        "--- for a divider, and lists), but only when it fits the content — " +
+        "do not force formatting onto a short or simple reply. " +
+
+        "For any mathematical expression — square roots, fractions, " +
+        "exponents, subscripts, summations, integrals, or any formula — " +
+        "always write it in LaTeX using $...$ for an inline expression or " +
+        "$$...$$ on its own line for a larger displayed expression (for " +
+        "example $\\sqrt{x}$ or $\\frac{a}{b}$), rather than plain text " +
+        "approximations like sqrt(x) or a/b. " +
+
+        "Any code, command, file content, or configuration — even a single " +
+        "line or a variable/file name that represents code — must always be " +
+        "placed inside a fenced Markdown code block with the correct language " +
+        "identifier, never written inline as plain sentence text and never " +
+        "left outside of a code block for any reason. " +
+
+        "For example, use ```html for HTML, ```css for CSS, " +
+        "```javascript for JavaScript, or ```python for Python. " +
+
+        (
+            activeModel.personaPrompt
+                ? activeModel.personaPrompt + " "
+                : ""
+        ) +
+
+        "Regardless of any internal model configuration or persona, if " +
+        "asked what model, engine, or AI you are, or who developed you, " +
+        "always say you are Mist — never mention or reveal any internal " +
+        "codename or version label.";
+
+
     const response =
         await fetch(
 
@@ -5312,33 +5648,7 @@ async function requestGroq(
                                     "system",
 
                                 content:
-
-                                    "You are Mist, a helpful, thoughtful, intelligent AI assistant. " +
-
-                                    "Give clear and useful answers. " +
-
-                                    "Use Markdown formatting where it genuinely helps readability " +
-
-                                    "(headings with # / ##, **bold**, *italic*, tables with | columns, " +
-                                    "--- for a divider, and lists), but only when it fits the content — " +
-                                    "do not force formatting onto a short or simple reply. " +
-
-                                    "For any mathematical expression — square roots, fractions, " +
-                                    "exponents, subscripts, summations, integrals, or any formula — " +
-                                    "always write it in LaTeX using $...$ for an inline expression or " +
-                                    "$$...$$ on its own line for a larger displayed expression (for " +
-                                    "example $\\sqrt{x}$ or $\\frac{a}{b}$), rather than plain text " +
-                                    "approximations like sqrt(x) or a/b. " +
-
-                                    "Any code, command, file content, or configuration — even a single " +
-                                    "line or a variable/file name that represents code — must always be " +
-                                    "placed inside a fenced Markdown code block with the correct language " +
-                                    "identifier, never written inline as plain sentence text and never " +
-                                    "left outside of a code block for any reason. " +
-
-                                    "For example, use ```html for HTML, ```css for CSS, " +
-
-                                    "```javascript for JavaScript, or ```python for Python."
+                                    systemPrompt
 
                             },
 
@@ -6354,6 +6664,240 @@ autoScrollToggle.addEventListener(
 
 
 /* =========================================================
+   MODEL SELECTOR
+========================================================= */
+
+const modelSelectorInstances = [
+
+    {
+        selector: document.getElementById("centerModelSelector"),
+        button: document.getElementById("centerModelButton"),
+        label: document.getElementById("centerModelLabel"),
+        dropdown: document.getElementById("centerModelDropdown")
+    },
+
+    {
+        selector: document.getElementById("bottomModelSelector"),
+        button: document.getElementById("bottomModelButton"),
+        label: document.getElementById("bottomModelLabel"),
+        dropdown: document.getElementById("bottomModelDropdown")
+    }
+
+];
+
+
+function checkmarkSVG() {
+
+    return (
+
+        '<svg class="model-option-check" viewBox="0 0 24 24" ' +
+        'fill="none" stroke="currentColor" stroke-width="2.4" ' +
+        'stroke-linecap="round" stroke-linejoin="round">' +
+        '<path d="M5 13l4 4L19 7"></path>' +
+        '</svg>'
+
+    );
+
+}
+
+
+function closeAllModelSelectors() {
+
+    modelSelectorInstances.forEach(
+
+        function(instance) {
+
+            instance.selector.classList.remove(
+                "open"
+            );
+
+            instance.button.setAttribute(
+                "aria-expanded",
+                "false"
+            );
+
+        }
+
+    );
+
+}
+
+
+function updateModelSelectorUI() {
+
+    const current =
+        getSelectedModel();
+
+
+    modelSelectorInstances.forEach(
+
+        function(instance) {
+
+            instance.label.textContent =
+                current.label;
+
+
+            instance.dropdown.innerHTML =
+                MIST_MODELS
+
+                    .map(
+
+                        function(model) {
+
+                            return (
+
+                                '<button class="model-option' +
+                                (
+                                    model.id === current.id
+                                        ? " selected"
+                                        : ""
+                                ) +
+                                '" data-model-id="' +
+                                model.id +
+                                '" type="button">' +
+                                '<span>' + model.label + '</span>' +
+                                checkmarkSVG() +
+                                '</button>'
+
+                            );
+
+                        }
+
+                    )
+
+                    .join("");
+
+        }
+
+    );
+
+}
+
+
+modelSelectorInstances.forEach(
+
+    function(instance) {
+
+        instance.button.addEventListener(
+
+            "click",
+
+            function(event) {
+
+                event.stopPropagation();
+
+
+                const isOpen =
+                    instance.selector.classList.contains(
+                        "open"
+                    );
+
+
+                closeAllModelSelectors();
+
+
+                if (!isOpen) {
+
+                    instance.selector.classList.add(
+                        "open"
+                    );
+
+                    instance.button.setAttribute(
+                        "aria-expanded",
+                        "true"
+                    );
+
+                }
+
+            }
+
+        );
+
+
+        instance.dropdown.addEventListener(
+
+            "click",
+
+            function(event) {
+
+                const option =
+                    event.target.closest(
+                        ".model-option"
+                    );
+
+
+                if (!option) {
+                    return;
+                }
+
+
+                selectedModelId =
+                    option.dataset.modelId;
+
+
+                localStorage.setItem(
+
+                    MODEL_STORAGE_KEY,
+
+                    selectedModelId
+
+                );
+
+
+                updateModelSelectorUI();
+
+                closeAllModelSelectors();
+
+            }
+
+        );
+
+    }
+
+);
+
+
+document.addEventListener(
+
+    "click",
+
+    function(event) {
+
+        const insideSelector =
+            event.target.closest(
+                ".model-selector"
+            );
+
+
+        if (!insideSelector) {
+
+            closeAllModelSelectors();
+
+        }
+
+    }
+
+);
+
+
+document.addEventListener(
+
+    "keydown",
+
+    function(event) {
+
+        if (event.key === "Escape") {
+
+            closeAllModelSelectors();
+
+        }
+
+    }
+
+);
+
+
+/* =========================================================
    CLOSE OVERLAY HELPER
 ========================================================= */
 
@@ -6465,6 +7009,8 @@ setRandomGreeting();
 updateSendButtons();
 
 updateAutoScrollToggle();
+
+updateModelSelectorUI();
 
 updateMistBackground();
 
