@@ -3828,19 +3828,9 @@ function populateVoiceSelect() {
 
                 function(voice) {
 
-                    const isSuggested =
-                        suggested &&
-                        voice.voiceURI === suggested.voiceURI;
-
-
                     const label =
                         voice.name +
-                        " (" + voice.lang + ")" +
-                        (
-                            isSuggested
-                                ? " — closest to Jarvis"
-                                : ""
-                        );
+                        " (" + voice.lang + ")";
 
 
                     return (
@@ -4403,6 +4393,108 @@ function appendStoredAssistant(content) {
         false
 
     );
+
+}
+
+
+/* =========================================================
+   AUTO-FENCE CODE (SAFETY NET)
+
+   Mist is instructed to always wrap code in a fenced block,
+   but no model follows formatting instructions 100% of the
+   time. As a fallback, if a response has no code fence at
+   all, this scans for runs of lines that look like code
+   (braces, semicolons, indentation, common keywords/tags)
+   and wraps them in a fence itself, so they still land in
+   the code box instead of as plain text.
+========================================================= */
+
+function looksLikeCodeLine(line) {
+
+    if (!line.trim()) {
+        return false;
+    }
+
+    return (
+
+        /^(\s{4,}|\t)/.test(line) ||
+
+        /[{};]\s*$/.test(line) ||
+
+        /^\s*(function\s|def\s|class\s|const\s|let\s|var\s|import\s|from\s|#include|SELECT\s|INSERT\s|UPDATE\s|DELETE\s|if\s*\(|for\s*\(|while\s*\(|return\s|public\s|private\s|void\s|echo\s|print\()/i.test(line) ||
+
+        /^\s*<\/?[a-zA-Z][a-zA-Z0-9]*(\s|>|\/>)/.test(line) ||
+
+        /^\s*[a-zA-Z_$][\w$]*\s*[:=]\s*(function|\(|\{|\[)/.test(line)
+
+    );
+
+}
+
+
+function autoFenceCode(text) {
+
+    if (text.indexOf("```") !== -1) {
+
+        return text;
+
+    }
+
+
+    const lines =
+        text.split("\n");
+
+    const output = [];
+
+    let block = [];
+
+
+    function flushBlock() {
+
+        if (block.length >= 2) {
+
+            output.push("```");
+
+            output.push(...block);
+
+            output.push("```");
+
+        } else {
+
+            output.push(...block);
+
+        }
+
+        block = [];
+
+    }
+
+
+    lines.forEach(
+
+        function(line) {
+
+            if (looksLikeCodeLine(line)) {
+
+                block.push(line);
+
+            } else {
+
+                flushBlock();
+
+                output.push(line);
+
+            }
+
+        }
+
+    );
+
+
+    flushBlock();
+
+
+    return output.join("\n");
 
 }
 
@@ -6108,8 +6200,10 @@ async function sendMessage(text) {
     try {
 
         const reply =
-            await requestGroq(
-                chat.messages
+            autoFenceCode(
+                await requestGroq(
+                    chat.messages
+                )
             );
 
 
@@ -6408,7 +6502,11 @@ async function requestGroq(
         "Regardless of any internal model configuration or persona, if " +
         "asked what model, engine, or AI you are, or who developed you, " +
         "always say you are Mist — never mention or reveal any internal " +
-        "codename or version label.";
+        "codename or version label. " +
+
+        "One more reminder because it matters: wrap ALL code in a fenced " +
+        "code block (```language ... ```) — never write code inline in a " +
+        "sentence, no matter how short it is.";
 
 
     const response =
@@ -6456,7 +6554,7 @@ async function requestGroq(
                         ],
 
                         temperature:
-                            0.7
+                            0.5
 
                     })
 
