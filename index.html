@@ -680,6 +680,54 @@ button {
     height: 17px;
 }
 
+.mic-button {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: #6b6b6b;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.mic-button:hover {
+    background: rgba(0, 0, 0, 0.06);
+    color: #333;
+}
+
+.mic-button svg {
+    width: 18px;
+    height: 18px;
+}
+
+.mic-button.unsupported {
+    display: none;
+}
+
+.mic-button.listening {
+    color: #d94b4b;
+    background: rgba(217, 75, 75, 0.12);
+    animation: micPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes micPulse {
+
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(217, 75, 75, 0.35);
+    }
+
+    50% {
+        box-shadow: 0 0 0 7px rgba(217, 75, 75, 0);
+    }
+
+}
+
 
 /* =========================================================
    MODEL SELECTOR
@@ -818,6 +866,7 @@ button {
 
 .message-actions {
     display: flex;
+    gap: 2px;
 }
 
 .message-copy {
@@ -846,6 +895,36 @@ button {
 }
 
 .message-copy svg {
+    width: 14px;
+    height: 14px;
+}
+
+.message-speak {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: #8a8a8a;
+    padding: 4px 7px;
+    font-size: 12px;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease;
+}
+
+.message-speak:hover {
+    background: #3d3d3d;
+    color: #ddd;
+}
+
+.message-speak.speaking {
+    color: #7fb8e0;
+}
+
+.message-speak svg {
     width: 14px;
     height: 14px;
 }
@@ -1406,6 +1485,32 @@ button {
     background: #353535;
 }
 
+.settings-row-stacked {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+}
+
+.settings-input {
+    width: 100%;
+    height: 40px;
+    border: 1px solid #505050;
+    border-radius: 9px;
+    outline: none;
+    padding: 0 12px;
+    background: #242424;
+    color: white;
+    font-size: 14px;
+}
+
+.settings-input:focus {
+    border-color: #777;
+}
+
+select.settings-input {
+    cursor: pointer;
+}
+
 .settings-title {
     font-size: 14px;
     color: #eee;
@@ -1963,6 +2068,33 @@ button {
 
 
                 <button
+                    class="mic-button"
+                    id="centerMic"
+                    type="button"
+                    aria-label="Speak your message"
+                >
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+
+                        <rect x="9" y="2" width="6" height="12" rx="3"></rect>
+
+                        <path d="M5 10a7 7 0 0 0 14 0"></path>
+
+                        <path d="M12 19v3"></path>
+
+                    </svg>
+
+                </button>
+
+
+                <button
                     class="send-button"
                     id="centerSend"
                     disabled
@@ -2056,6 +2188,33 @@ button {
                     placeholder="Message..."
                     aria-label="Message"
                 ></textarea>
+
+
+                <button
+                    class="mic-button"
+                    id="bottomMic"
+                    type="button"
+                    aria-label="Speak your message"
+                >
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+
+                        <rect x="9" y="2" width="6" height="12" rx="3"></rect>
+
+                        <path d="M5 10a7 7 0 0 0 14 0"></path>
+
+                        <path d="M12 19v3"></path>
+
+                    </svg>
+
+                </button>
 
 
                 <button
@@ -2404,6 +2563,82 @@ button {
         </div>
 
 
+        <div class="settings-row settings-row-stacked">
+
+            <div>
+
+                <div class="settings-title">
+                    Your name
+                </div>
+
+                <div class="settings-description">
+                    Let Mist know what to call you. Leave this blank and
+                    Mist won't try to use a name at all.
+                </div>
+
+            </div>
+
+
+            <input
+                class="settings-input"
+                id="userNameInput"
+                type="text"
+                placeholder="e.g. Alex"
+                autocomplete="off"
+                maxlength="60"
+            >
+
+        </div>
+
+
+        <div class="settings-row settings-row-stacked">
+
+            <div>
+
+                <div class="settings-title">
+                    Voice
+                </div>
+
+                <div class="settings-description">
+                    Used when reading Mist's responses aloud. Mist picks the
+                    closest-sounding voice available on your system by default.
+                </div>
+
+            </div>
+
+
+            <select
+                class="settings-input"
+                id="voiceSelect"
+            ></select>
+
+        </div>
+
+
+        <div class="settings-row">
+
+            <div>
+
+                <div class="settings-title">
+                    Read responses aloud automatically
+                </div>
+
+                <div class="settings-description">
+                    Speak each reply out loud as soon as it finishes.
+                </div>
+
+            </div>
+
+
+            <button
+                class="toggle"
+                id="autoSpeakToggle"
+                aria-label="Toggle automatic read-aloud"
+            ></button>
+
+        </div>
+
+
         <div class="settings-row">
 
             <div>
@@ -2534,6 +2769,15 @@ const AUTO_SCROLL_KEY =
 const MODEL_STORAGE_KEY =
     "mist_selected_model_v1";
 
+const USER_NAME_KEY =
+    "mist_user_name_v1";
+
+const VOICE_STORAGE_KEY =
+    "mist_voice_uri_v1";
+
+const AUTO_SPEAK_KEY =
+    "mist_auto_speak_v1";
+
 
 /* =========================================================
    STATE
@@ -2549,6 +2793,12 @@ let pendingDeleteId = null;
 
 let autoScroll =
     localStorage.getItem(AUTO_SCROLL_KEY) !== "false";
+
+let selectedVoiceURI =
+    localStorage.getItem(VOICE_STORAGE_KEY) || "";
+
+let autoSpeak =
+    localStorage.getItem(AUTO_SPEAK_KEY) === "true";
 
 
 /* =========================================================
@@ -3408,6 +3658,506 @@ function createCopyButton(getText) {
 
 
 /* =========================================================
+   TEXT TO SPEECH
+
+   Uses the browser's built-in speech synthesis (no API key
+   needed). There's no way to bundle an actual custom voice
+   in a single HTML file, so this picks the closest-sounding
+   built-in voice to a calm, measured, British-accented
+   assistant — think "Daniel" on macOS/iOS or "Google UK
+   English Male" / "Microsoft Ryan" on Chrome/Edge/Windows —
+   and tunes the pitch/rate to lean into that feel. It won't
+   sound identical to Jarvis, but it's the closest a browser
+   can get without a paid voice API.
+========================================================= */
+
+const speechSupported =
+    "speechSynthesis" in window;
+
+let availableVoices = [];
+
+let currentUtterance = null;
+
+let currentSpeakButton = null;
+
+
+const JARVIS_VOICE_HINTS = [
+    "daniel",
+    "arthur",
+    "george",
+    "ryan",
+    "oliver",
+    "uk english male",
+    "british"
+];
+
+
+function scoreVoiceForJarvis(voice) {
+
+    const name =
+        voice.name.toLowerCase();
+
+    const lang =
+        (voice.lang || "").toLowerCase();
+
+    let score = 0;
+
+
+    if (lang.startsWith("en-gb")) {
+
+        score += 5;
+
+    }
+
+
+    JARVIS_VOICE_HINTS.forEach(
+
+        function(hint) {
+
+            if (name.includes(hint)) {
+
+                score += 10;
+
+            }
+
+        }
+
+    );
+
+
+    if (
+
+        name.includes("male") &&
+        !name.includes("female")
+
+    ) {
+
+        score += 2;
+
+    }
+
+
+    return score;
+
+}
+
+
+function guessBestJarvisVoice() {
+
+    if (!availableVoices.length) {
+
+        return null;
+
+    }
+
+
+    let best = availableVoices[0];
+
+    let bestScore = -1;
+
+
+    availableVoices.forEach(
+
+        function(voice) {
+
+            const score =
+                scoreVoiceForJarvis(voice);
+
+
+            if (score > bestScore) {
+
+                bestScore = score;
+
+                best = voice;
+
+            }
+
+        }
+
+    );
+
+
+    return best;
+
+}
+
+
+function populateVoiceSelect() {
+
+    const select =
+        document.getElementById(
+            "voiceSelect"
+        );
+
+
+    if (!select) {
+        return;
+    }
+
+
+    if (!availableVoices.length) {
+
+        select.innerHTML =
+            '<option value="">Loading voices…</option>';
+
+        return;
+
+    }
+
+
+    const suggested =
+        guessBestJarvisVoice();
+
+
+    if (
+        !selectedVoiceURI &&
+        suggested
+    ) {
+
+        selectedVoiceURI =
+            suggested.voiceURI;
+
+    }
+
+
+    select.innerHTML =
+
+        availableVoices
+
+            .map(
+
+                function(voice) {
+
+                    const isSuggested =
+                        suggested &&
+                        voice.voiceURI === suggested.voiceURI;
+
+
+                    const label =
+                        voice.name +
+                        " (" + voice.lang + ")" +
+                        (
+                            isSuggested
+                                ? " — closest to Jarvis"
+                                : ""
+                        );
+
+
+                    return (
+
+                        '<option value="' +
+                        voice.voiceURI +
+                        '"' +
+                        (
+                            voice.voiceURI === selectedVoiceURI
+                                ? " selected"
+                                : ""
+                        ) +
+                        '>' +
+                        label +
+                        '</option>'
+
+                    );
+
+                }
+
+            )
+
+            .join("");
+
+}
+
+
+function loadVoices() {
+
+    availableVoices =
+        window.speechSynthesis.getVoices();
+
+
+    populateVoiceSelect();
+
+}
+
+
+if (speechSupported) {
+
+    loadVoices();
+
+
+    window.speechSynthesis.onvoiceschanged =
+        loadVoices;
+
+}
+
+
+function getSpeakableText(rawText) {
+
+    let speakable = rawText;
+
+
+    speakable = speakable.replace(
+
+        /```[^\n`]*\n[\s\S]*?```/g,
+
+        " Code block. "
+
+    );
+
+
+    speakable = speakable.replace(
+
+        /\\sqrt\{([^{}]+)\}/g,
+
+        "the square root of $1"
+
+    );
+
+    speakable = speakable.replace(
+
+        /\\frac\{([^{}]+)\}\{([^{}]+)\}/g,
+
+        "$1 over $2"
+
+    );
+
+    speakable = speakable.replace(
+        /\$\$([\s\S]+?)\$\$/g,
+        " $1 "
+    );
+
+    speakable = speakable.replace(
+        /\$([^$\n]+?)\$/g,
+        " $1 "
+    );
+
+    speakable = speakable.replace(
+        /\\\[|\\\]|\\\(|\\\)/g,
+        ""
+    );
+
+
+    speakable = speakable.replace(/^#{1,6}\s+/gm, "");
+
+    speakable = speakable.replace(/\*\*([^*]+)\*\*/g, "$1");
+
+    speakable = speakable.replace(/\*([^*]+)\*/g, "$1");
+
+    speakable = speakable.replace(/`([^`]+)`/g, "$1");
+
+    speakable = speakable.replace(/^-{3,}$/gm, "");
+
+    speakable = speakable.replace(/^[-*+]\s+/gm, "");
+
+    speakable = speakable.replace(/^\d+\.\s+/gm, "");
+
+    speakable = speakable.replace(/\|/g, " ");
+
+
+    return speakable.replace(/\s+/g, " ").trim();
+
+}
+
+
+function stopSpeaking() {
+
+    if (speechSupported) {
+
+        window.speechSynthesis.cancel();
+
+    }
+
+
+    if (currentSpeakButton) {
+
+        currentSpeakButton.classList.remove(
+            "speaking"
+        );
+
+        const label =
+            currentSpeakButton.querySelector(
+                "span"
+            );
+
+        if (label) {
+
+            label.textContent =
+                "Read aloud";
+
+        }
+
+    }
+
+
+    currentUtterance = null;
+
+    currentSpeakButton = null;
+
+}
+
+
+function speakText(
+
+    text,
+
+    button
+
+) {
+
+    if (!speechSupported) {
+        return;
+    }
+
+
+    const wasThisButton =
+        currentSpeakButton === button;
+
+
+    stopSpeaking();
+
+
+    if (wasThisButton) {
+
+        return;
+
+    }
+
+
+    const speakable =
+        getSpeakableText(text);
+
+
+    if (!speakable) {
+        return;
+    }
+
+
+    const utterance =
+        new SpeechSynthesisUtterance(
+            speakable
+        );
+
+
+    const voice =
+        availableVoices.find(
+
+            v =>
+                v.voiceURI === selectedVoiceURI
+
+        );
+
+
+    if (voice) {
+
+        utterance.voice = voice;
+
+    }
+
+
+    utterance.rate = 0.95;
+
+    utterance.pitch = 0.85;
+
+
+    utterance.onend =
+        stopSpeaking;
+
+    utterance.onerror =
+        stopSpeaking;
+
+
+    currentUtterance = utterance;
+
+    currentSpeakButton = button;
+
+
+    button.classList.add(
+        "speaking"
+    );
+
+    const label =
+        button.querySelector(
+            "span"
+        );
+
+    if (label) {
+
+        label.textContent =
+            "Stop";
+
+    }
+
+
+    window.speechSynthesis.speak(
+        utterance
+    );
+
+}
+
+
+function createSpeakButton(getText) {
+
+    const button =
+        document.createElement("button");
+
+    button.type =
+        "button";
+
+    button.className =
+        "message-speak";
+
+    button.setAttribute(
+        "aria-label",
+        "Read message aloud"
+    );
+
+    button.innerHTML =
+
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" ' +
+        'stroke-linecap="round" stroke-linejoin="round">' +
+        '<path d="M4 9v6h4l5 4V5L8 9H4z"></path>' +
+        '<path d="M16.5 8.5a5 5 0 0 1 0 7"></path>' +
+        '<path d="M19 6a9 9 0 0 1 0 12"></path>' +
+        '</svg>' +
+        '<span>Read aloud</span>';
+
+
+    if (!speechSupported) {
+
+        button.style.display =
+            "none";
+
+        return button;
+
+    }
+
+
+    button.addEventListener(
+
+        "click",
+
+        function() {
+
+            const text =
+                typeof getText === "function"
+                    ? getText()
+                    : getText;
+
+            speakText(
+                text,
+                button
+            );
+
+        }
+
+    );
+
+
+    return button;
+
+}
+
+
+/* =========================================================
    RENDER SAVED MESSAGES
 ========================================================= */
 
@@ -3516,6 +4266,18 @@ function appendMessage(
         )
     );
 
+    if (
+        role === "assistant"
+    ) {
+
+        actions.appendChild(
+            createSpeakButton(
+                () => copyText
+            )
+        );
+
+    }
+
     row.appendChild(
         actions
     );
@@ -3598,6 +4360,12 @@ function appendStoredAssistant(content) {
 
     actions.appendChild(
         createCopyButton(
+            () => content
+        )
+    );
+
+    actions.appendChild(
+        createSpeakButton(
             () => content
         )
     );
@@ -5402,6 +6170,15 @@ async function sendMessage(text) {
             )
         );
 
+        const speakButton =
+            createSpeakButton(
+                () => reply
+            );
+
+        actions.appendChild(
+            speakButton
+        );
+
         row.appendChild(
             actions
         );
@@ -5443,6 +6220,16 @@ async function sendMessage(text) {
         logo.classList.remove(
             "generating"
         );
+
+
+        if (autoSpeak) {
+
+            speakText(
+                reply,
+                speakButton
+            );
+
+        }
 
 
         chat.messages.push({
@@ -5578,6 +6365,17 @@ async function requestGroq(
 
         "Give clear and useful answers. " +
 
+        "MANDATORY CODE RULE: any code, command, file content, config, " +
+        "or file/variable name that represents code must ALWAYS be placed " +
+        "inside a fenced Markdown code block with a language identifier " +
+        "— even a single line, even inside an otherwise plain-text reply. " +
+        "Never write code inline as part of a sentence. For example, if " +
+        "asked for a function, respond like this: " +
+        "\"Here you go:\n```python\ndef add(a, b):\n    return a + b\n```\" " +
+        "and NOT like this: \"Here you go: def add(a, b): return a + b\". " +
+        "This rule applies no matter how short the code is or how the " +
+        "request is phrased. " +
+
         "Use Markdown formatting where it genuinely helps readability " +
 
         "(headings with # / ##, **bold**, *italic*, tables with | columns, " +
@@ -5591,19 +6389,20 @@ async function requestGroq(
         "example $\\sqrt{x}$ or $\\frac{a}{b}$), rather than plain text " +
         "approximations like sqrt(x) or a/b. " +
 
-        "Any code, command, file content, or configuration — even a single " +
-        "line or a variable/file name that represents code — must always be " +
-        "placed inside a fenced Markdown code block with the correct language " +
-        "identifier, never written inline as plain sentence text and never " +
-        "left outside of a code block for any reason. " +
-
-        "For example, use ```html for HTML, ```css for CSS, " +
-        "```javascript for JavaScript, or ```python for Python. " +
-
         (
             activeModel.personaPrompt
                 ? activeModel.personaPrompt + " "
                 : ""
+        ) +
+
+        (
+            userName
+                ? "The person you're talking to goes by \"" + userName +
+                  "\". You can address them by that name where it feels " +
+                  "natural, without overusing it. "
+                : "You don't know the person's name. Do not address them " +
+                  "by any name, guessed or invented — just talk to them " +
+                  "directly. "
         ) +
 
         "Regardless of any internal model configuration or persona, if " +
@@ -5768,6 +6567,238 @@ function updateSendButtons() {
         !bottomInput.value.trim();
 
 }
+
+
+/* =========================================================
+   SPEECH TO TEXT
+========================================================= */
+
+const SpeechRecognitionClass =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition ||
+    null;
+
+let activeRecognition = null;
+
+let activeMicButton = null;
+let activeMicTextarea = null;
+
+
+function createRecognizer() {
+
+    const recognition =
+        new SpeechRecognitionClass();
+
+    recognition.lang =
+        "en-US";
+
+    recognition.interimResults =
+        false;
+
+    recognition.maxAlternatives =
+        1;
+
+    return recognition;
+
+}
+
+
+function stopListening() {
+
+    if (activeRecognition) {
+
+        activeRecognition.stop();
+
+    }
+
+}
+
+
+function startListening(
+
+    micButton,
+
+    textarea
+
+) {
+
+    if (!SpeechRecognitionClass) {
+
+        return;
+
+    }
+
+
+    if (activeRecognition) {
+
+        stopListening();
+
+        return;
+
+    }
+
+
+    const recognition =
+        createRecognizer();
+
+    activeRecognition =
+        recognition;
+
+    activeMicButton =
+        micButton;
+
+    activeMicTextarea =
+        textarea;
+
+
+    micButton.classList.add(
+        "listening"
+    );
+
+
+    recognition.onresult =
+
+        function(event) {
+
+            const transcript =
+                event.results[0][0].transcript;
+
+
+            const needsSpace =
+
+                textarea.value.length > 0 &&
+
+                !/\s$/.test(
+                    textarea.value
+                );
+
+
+            textarea.value +=
+
+                (
+                    needsSpace
+                        ? " "
+                        : ""
+                )
+
+                +
+
+                transcript;
+
+
+            resizeTextarea(
+                textarea
+            );
+
+            updateSendButtons();
+
+            textarea.focus();
+
+        };
+
+
+    recognition.onerror =
+
+        function() {
+
+            micButton.classList.remove(
+                "listening"
+            );
+
+        };
+
+
+    recognition.onend =
+
+        function() {
+
+            micButton.classList.remove(
+                "listening"
+            );
+
+            activeRecognition = null;
+            activeMicButton = null;
+            activeMicTextarea = null;
+
+        };
+
+
+    recognition.start();
+
+}
+
+
+function setupMicButton(
+
+    buttonId,
+
+    textarea
+
+) {
+
+    const micButton =
+        document.getElementById(
+            buttonId
+        );
+
+
+    if (!SpeechRecognitionClass) {
+
+        micButton.classList.add(
+            "unsupported"
+        );
+
+        micButton.title =
+            "Speech input isn't supported in this browser.";
+
+        return;
+
+    }
+
+
+    micButton.addEventListener(
+
+        "click",
+
+        function() {
+
+            if (
+
+                activeRecognition &&
+                activeMicButton === micButton
+
+            ) {
+
+                stopListening();
+
+            } else {
+
+                startListening(
+
+                    micButton,
+
+                    textarea
+
+                );
+
+            }
+
+        }
+
+    );
+
+}
+
+
+setupMicButton(
+    "centerMic",
+    centerInput
+);
+
+setupMicButton(
+    "bottomMic",
+    bottomInput
+);
 
 
 /* =========================================================
@@ -6581,6 +7612,47 @@ const autoScrollToggle =
         "autoScrollToggle"
     );
 
+const userNameInput =
+    document.getElementById(
+        "userNameInput"
+    );
+
+
+let userName =
+    localStorage.getItem(
+        USER_NAME_KEY
+    )
+
+    ||
+
+    "";
+
+userNameInput.value =
+    userName;
+
+
+userNameInput.addEventListener(
+
+    "input",
+
+    function() {
+
+        userName =
+            userNameInput.value.trim();
+
+
+        localStorage.setItem(
+
+            USER_NAME_KEY,
+
+            userName
+
+        );
+
+    }
+
+);
+
 
 function updateAutoScrollToggle() {
 
@@ -6657,6 +7729,81 @@ autoScrollToggle.addEventListener(
 
 
         updateAutoScrollToggle();
+
+    }
+
+);
+
+
+const voiceSelect =
+    document.getElementById(
+        "voiceSelect"
+    );
+
+const autoSpeakToggle =
+    document.getElementById(
+        "autoSpeakToggle"
+    );
+
+
+function updateAutoSpeakToggle() {
+
+    autoSpeakToggle.classList.toggle(
+
+        "active",
+
+        autoSpeak
+
+    );
+
+}
+
+
+voiceSelect.addEventListener(
+
+    "change",
+
+    function() {
+
+        selectedVoiceURI =
+            voiceSelect.value;
+
+
+        localStorage.setItem(
+
+            VOICE_STORAGE_KEY,
+
+            selectedVoiceURI
+
+        );
+
+    }
+
+);
+
+
+autoSpeakToggle.addEventListener(
+
+    "click",
+
+    function() {
+
+        autoSpeak =
+            !autoSpeak;
+
+
+        localStorage.setItem(
+
+            AUTO_SPEAK_KEY,
+
+            autoSpeak
+                ? "true"
+                : "false"
+
+        );
+
+
+        updateAutoSpeakToggle();
 
     }
 
@@ -7009,6 +8156,19 @@ setRandomGreeting();
 updateSendButtons();
 
 updateAutoScrollToggle();
+
+updateAutoSpeakToggle();
+
+if (!speechSupported) {
+
+    voiceSelect.disabled = true;
+
+    voiceSelect.innerHTML =
+        '<option value="">Not supported in this browser</option>';
+
+    autoSpeakToggle.disabled = true;
+
+}
 
 updateModelSelectorUI();
 
