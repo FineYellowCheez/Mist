@@ -4474,21 +4474,27 @@ function looksLikeCodeLine(line) {
 
     return (
 
-        /^(\s{4,}|\t)/.test(line) ||
+        /^(\s{2,}|\t)/.test(line) ||
 
-        /[{};]\s*$/.test(trimmed) ||
+        /[{};:]\s*$/.test(trimmed) ||
 
-        /^(function\s|def\s|class\s|const\s|let\s|var\s|import\s|from\s|#include|@\w+|SELECT\s|INSERT\s|UPDATE\s|DELETE\s|if\s|elif\s|else:|for\s|while\s|return\b|public\s|private\s|void\s|echo\s|print\(|try:|except|with\s|self\.)/i.test(trimmed) ||
+        /^(function\s|def\s|class\s|const\s|let\s|var\s|import\s|from\s|#include|@\w+|SELECT\s|INSERT\s|UPDATE\s|DELETE\s|if\s|elif\s|else|for\s|foreach\s|while\s|return\b|public\s|private\s|protected\s|static\s|void\s|echo\s|print\(|console\.|try\b|except|catch\s|finally|with\s|self\.|struct\s|enum\s|interface\s|type\s|async\s|await\s|throw\s|raise\s|yield\s|lambda\s|switch\s|case\s|break;|continue;|new\s[A-Z]|package\s|namespace\s|use\s|require\(|module\.|export\s)/i.test(trimmed) ||
 
         /^<\/?[a-zA-Z][a-zA-Z0-9]*(\s|>|\/>)/.test(trimmed) ||
 
-        /^[a-zA-Z_$][\w$.]*\s*[:=]\s*(function|\(|\{|\[)/.test(trimmed) ||
+        /^[a-zA-Z_$][\w$.]*\s*[:=]\s*(function|\(|\{|\[|lambda)/.test(trimmed) ||
 
         /^-{4,}$/.test(trimmed) ||
 
         /^"""/.test(trimmed) ||
 
-        /^#(?!\s?[A-Z][a-z]+\s[a-z]+\s[a-z]+\s[a-z])/.test(trimmed)
+        /^(#|\/\/)(?!\s?[A-Z][a-z]+\s[a-z]+\s[a-z]+\s[a-z])/.test(trimmed) ||
+
+        /=>|->|::|\+=|-=|==|!=/.test(trimmed) ||
+
+        /^\)+:?\s*$/.test(trimmed) ||
+
+        /^[\]\)}]+[,;]?\s*$/.test(trimmed)
 
     );
 
@@ -4657,10 +4663,20 @@ function autoFenceCode(text) {
         codeLineCount / nonBlankLines.length;
 
 
+    /*
+        Bias heavily toward wrapping. A false positive just
+        means a bit of prose ends up in a monospace box —
+        mildly odd, still fully readable. A false negative
+        means real code gets caught by the prose renderer,
+        which joins lines with spaces and destroys it
+        completely. So the bar for "this looks like code"
+        is kept deliberately low.
+    */
+
     if (
 
-        nonBlankLines.length >= 10 &&
-        codeRatio >= 0.6
+        nonBlankLines.length >= 5 &&
+        codeRatio >= 0.35
 
     ) {
 
@@ -4671,9 +4687,35 @@ function autoFenceCode(text) {
     }
 
 
-    return autoFenceCodeRuns(
-        text
-    );
+    const runFenced =
+        autoFenceCodeRuns(
+            text
+        );
+
+
+    /*
+        Last-resort safety net: if the per-run pass still
+        didn't fence anything at all, but there's clearly a
+        meaningful amount of code-like content, just wrap the
+        whole reply rather than risk leaving it as broken
+        prose.
+    */
+
+    if (
+
+        runFenced.indexOf("```") === -1 &&
+        codeLineCount >= 4
+
+    ) {
+
+        return autoFenceEntireText(
+            text
+        );
+
+    }
+
+
+    return runFenced;
 
 }
 
