@@ -875,7 +875,20 @@ button {
 
 .message-actions {
     display: flex;
+    align-items: center;
     gap: 2px;
+}
+
+.message-timestamp {
+    display: none;
+    color: #777;
+    font-size: 11px;
+    padding: 0 6px;
+    white-space: nowrap;
+}
+
+body.show-timestamps .message-timestamp {
+    display: inline-block;
 }
 
 .message-copy {
@@ -1316,6 +1329,102 @@ button {
    OVERLAYS
 ========================================================= */
 
+/* =========================================================
+   TOAST NOTIFICATIONS
+========================================================= */
+
+.toast-container {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 400;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: min(360px, calc(100vw - 32px));
+    pointer-events: none;
+}
+
+.toast {
+    pointer-events: auto;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: #303030;
+    border: 1px solid #4a4a4a;
+    border-radius: 12px;
+    padding: 14px 14px 14px 16px;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
+    animation: toastIn 0.22s ease;
+}
+
+.toast.leaving {
+    animation: toastOut 0.18s ease forwards;
+}
+
+.toast-icon {
+    width: 19px;
+    height: 19px;
+    min-width: 19px;
+    margin-top: 1px;
+    color: #e0a13a;
+}
+
+.toast-text {
+    flex: 1;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #f0f0f0;
+}
+
+.toast-close {
+    border: 0;
+    background: transparent;
+    color: #999;
+    cursor: pointer;
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    border-radius: 6px;
+    display: grid;
+    place-items: center;
+    font-size: 14px;
+}
+
+.toast-close:hover {
+    background: #454545;
+    color: #fff;
+}
+
+@keyframes toastIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+@keyframes toastOut {
+
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    to {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+}
+
+
 .overlay {
     position: fixed;
     inset: 0;
@@ -1478,7 +1587,58 @@ button {
 ========================================================= */
 
 .settings-modal {
-    width: min(520px, 100%);
+    width: min(560px, 100%);
+    max-height: min(600px, calc(100vh - 40px));
+    display: flex;
+    flex-direction: column;
+}
+
+.settings-tabs {
+    display: flex;
+    gap: 5px;
+    padding: 10px 14px;
+    border-bottom: 1px solid #444;
+}
+
+.settings-tab {
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: #aaa;
+    padding: 7px 14px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.settings-tab:hover {
+    background: #3a3a3a;
+    color: #ddd;
+}
+
+.settings-tab.active {
+    background: #444;
+    color: white;
+}
+
+.settings-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.settings-section {
+    display: none;
+}
+
+.settings-section.active {
+    display: block;
+}
+
+.settings-slider {
+    width: 100%;
+    accent-color: #858585;
+    cursor: pointer;
 }
 
 .settings-row {
@@ -1822,6 +1982,12 @@ select.settings-input {
 </head>
 
 <body>
+
+<div
+    class="toast-container"
+    id="toastContainer"
+    aria-live="polite"
+></div>
 
 <div class="app">
 
@@ -2596,102 +2762,418 @@ select.settings-input {
         </div>
 
 
-        <div class="settings-row settings-row-stacked">
+        <div class="settings-tabs">
 
-            <div>
+            <button
+                class="settings-tab active"
+                data-settings-section="general"
+                type="button"
+            >
+                General
+            </button>
 
-                <div class="settings-title">
-                    Your name
-                </div>
+            <button
+                class="settings-tab"
+                data-settings-section="chat"
+                type="button"
+            >
+                Chat
+            </button>
 
-                <div class="settings-description">
-                    Let Mist know what to call you. Leave this blank and
-                    Mist won't try to use a name at all.
-                </div>
+            <button
+                class="settings-tab"
+                data-settings-section="voice"
+                type="button"
+            >
+                Voice
+            </button>
 
-            </div>
+            <button
+                class="settings-tab"
+                data-settings-section="data"
+                type="button"
+            >
+                Data
+            </button>
+
+        </div>
 
 
-            <input
-                class="settings-input"
-                id="userNameInput"
-                type="text"
-                placeholder="e.g. Alex"
-                autocomplete="off"
-                maxlength="60"
+        <div class="settings-body">
+
+
+            <!-- GENERAL -->
+
+            <div
+                class="settings-section active"
+                data-settings-section="general"
             >
 
-        </div>
+                <div class="settings-row settings-row-stacked">
+
+                    <div>
+
+                        <div class="settings-title">
+                            Your name
+                        </div>
+
+                        <div class="settings-description">
+                            Let Mist know what to call you. Leave this blank
+                            and Mist won't try to use a name at all.
+                        </div>
+
+                    </div>
 
 
-        <div class="settings-row settings-row-stacked">
+                    <input
+                        class="settings-input"
+                        id="userNameInput"
+                        type="text"
+                        placeholder="e.g. Alex"
+                        autocomplete="off"
+                        maxlength="60"
+                    >
 
-            <div>
-
-                <div class="settings-title">
-                    Voice
                 </div>
 
-                <div class="settings-description">
-                    Used when reading Mist's responses aloud. Mist picks the
-                    closest-sounding voice available on your system by default.
-                </div>
 
-            </div>
+                <div class="settings-row">
 
+                    <div>
 
-            <select
-                class="settings-input"
-                id="voiceSelect"
-            ></select>
+                        <div class="settings-title">
+                            Background animation
+                        </div>
 
-        </div>
+                        <div class="settings-description">
+                            Show the drifting mist behind the main screen.
+                            Turning this off can help on slower devices.
+                        </div>
 
-
-        <div class="settings-row">
-
-            <div>
-
-                <div class="settings-title">
-                    Read responses aloud automatically
-                </div>
-
-                <div class="settings-description">
-                    Speak each reply out loud as soon as it finishes.
-                </div>
-
-            </div>
+                    </div>
 
 
-            <button
-                class="toggle"
-                id="autoSpeakToggle"
-                aria-label="Toggle automatic read-aloud"
-            ></button>
+                    <button
+                        class="toggle"
+                        id="mistBackgroundToggle"
+                        aria-label="Toggle the mist background animation"
+                    ></button>
 
-        </div>
-
-
-        <div class="settings-row">
-
-            <div>
-
-                <div class="settings-title">
-                    Auto-scroll while generating
-                </div>
-
-                <div class="settings-description">
-                    Automatically follow the response while Mist is generating it.
                 </div>
 
             </div>
 
 
-            <button
-                class="toggle"
-                id="autoScrollToggle"
-                aria-label="Toggle automatic scrolling"
-            ></button>
+            <!-- CHAT -->
+
+            <div
+                class="settings-section"
+                data-settings-section="chat"
+            >
+
+                <div class="settings-row">
+
+                    <div>
+
+                        <div class="settings-title">
+                            Auto-scroll while generating
+                        </div>
+
+                        <div class="settings-description">
+                            Automatically follow the response while Mist is
+                            generating it.
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        class="toggle"
+                        id="autoScrollToggle"
+                        aria-label="Toggle automatic scrolling"
+                    ></button>
+
+                </div>
+
+
+                <div class="settings-row">
+
+                    <div>
+
+                        <div class="settings-title">
+                            Send message with Enter
+                        </div>
+
+                        <div class="settings-description">
+                            When on, Enter sends your message (Shift+Enter
+                            for a new line). When off, Enter always starts a
+                            new line and you send with the button instead.
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        class="toggle"
+                        id="sendOnEnterToggle"
+                        aria-label="Toggle send message with Enter"
+                    ></button>
+
+                </div>
+
+
+                <div class="settings-row">
+
+                    <div>
+
+                        <div class="settings-title">
+                            Show timestamps
+                        </div>
+
+                        <div class="settings-description">
+                            Show when each message was sent, underneath it.
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        class="toggle"
+                        id="showTimestampsToggle"
+                        aria-label="Toggle message timestamps"
+                    ></button>
+
+                </div>
+
+
+                <div class="settings-row">
+
+                    <div>
+
+                        <div class="settings-title">
+                            Instant responses
+                        </div>
+
+                        <div class="settings-description">
+                            Skip the typing animation and show each response
+                            all at once, as soon as it's ready.
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        class="toggle"
+                        id="instantResponsesToggle"
+                        aria-label="Toggle instant responses"
+                    ></button>
+
+                </div>
+
+
+                <div class="settings-row">
+
+                    <div>
+
+                        <div class="settings-title">
+                            Remember past chats
+                        </div>
+
+                        <div class="settings-description">
+                            Let Mist bring in brief, relevant context from
+                            your other chats on this device that haven't been
+                            deleted — so it doesn't start from zero every
+                            time.
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        class="toggle"
+                        id="enableMemoryToggle"
+                        aria-label="Toggle memory from past chats"
+                    ></button>
+
+                </div>
+
+            </div>
+
+
+            <!-- VOICE -->
+
+            <div
+                class="settings-section"
+                data-settings-section="voice"
+            >
+
+                <div class="settings-row settings-row-stacked">
+
+                    <div>
+
+                        <div class="settings-title">
+                            Voice
+                        </div>
+
+                        <div class="settings-description">
+                            Used when reading Mist's responses aloud. Mist
+                            picks the closest-sounding voice available on
+                            your system by default.
+                        </div>
+
+                    </div>
+
+
+                    <select
+                        class="settings-input"
+                        id="voiceSelect"
+                    ></select>
+
+                </div>
+
+
+                <div class="settings-row">
+
+                    <div>
+
+                        <div class="settings-title">
+                            Read responses aloud automatically
+                        </div>
+
+                        <div class="settings-description">
+                            Speak each reply out loud as soon as it finishes.
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        class="toggle"
+                        id="autoSpeakToggle"
+                        aria-label="Toggle automatic read-aloud"
+                    ></button>
+
+                </div>
+
+
+                <div class="settings-row settings-row-stacked">
+
+                    <div>
+
+                        <div class="settings-title">
+                            Speaking rate
+                        </div>
+
+                        <div class="settings-description">
+                            How quickly Mist speaks when reading aloud.
+                        </div>
+
+                    </div>
+
+
+                    <input
+                        class="settings-slider"
+                        id="speakingRateSlider"
+                        type="range"
+                        min="0.6"
+                        max="1.4"
+                        step="0.05"
+                    >
+
+                </div>
+
+
+                <div class="settings-row settings-row-stacked">
+
+                    <div>
+
+                        <div class="settings-title">
+                            Speaking pitch
+                        </div>
+
+                        <div class="settings-description">
+                            Lower is deeper and calmer, higher is brighter.
+                        </div>
+
+                    </div>
+
+
+                    <input
+                        class="settings-slider"
+                        id="speakingPitchSlider"
+                        type="range"
+                        min="0.6"
+                        max="1.4"
+                        step="0.05"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- DATA -->
+
+            <div
+                class="settings-section"
+                data-settings-section="data"
+            >
+
+                <div class="settings-row settings-row-stacked">
+
+                    <div>
+
+                        <div class="settings-title">
+                            Export your chats
+                        </div>
+
+                        <div class="settings-description">
+                            Download every chat on this device as a single
+                            JSON file.
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        class="modal-button"
+                        id="exportChatsButton"
+                        type="button"
+                    >
+                        Export chats
+                    </button>
+
+                </div>
+
+
+                <div class="settings-row settings-row-stacked">
+
+                    <div>
+
+                        <div class="settings-title">
+                            Clear all chats
+                        </div>
+
+                        <div class="settings-description">
+                            Permanently delete every chat on this device.
+                            This cannot be undone.
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        class="modal-button delete"
+                        id="clearChatsButton"
+                        type="button"
+                    >
+                        Clear all chats
+                    </button>
+
+                </div>
+
+            </div>
+
 
         </div>
 
@@ -2811,6 +3293,27 @@ const VOICE_STORAGE_KEY =
 const AUTO_SPEAK_KEY =
     "mist_auto_speak_v1";
 
+const SEND_ON_ENTER_KEY =
+    "mist_send_on_enter_v1";
+
+const MIST_BG_ENABLED_KEY =
+    "mist_bg_enabled_v1";
+
+const SPEAKING_RATE_KEY =
+    "mist_speaking_rate_v1";
+
+const SPEAKING_PITCH_KEY =
+    "mist_speaking_pitch_v1";
+
+const SHOW_TIMESTAMPS_KEY =
+    "mist_show_timestamps_v1";
+
+const INSTANT_RESPONSES_KEY =
+    "mist_instant_responses_v1";
+
+const ENABLE_MEMORY_KEY =
+    "mist_enable_memory_v1";
+
 
 /* =========================================================
    STATE
@@ -2832,6 +3335,31 @@ let selectedVoiceURI =
 
 let autoSpeak =
     localStorage.getItem(AUTO_SPEAK_KEY) === "true";
+
+let sendOnEnter =
+    localStorage.getItem(SEND_ON_ENTER_KEY) !== "false";
+
+let mistBackgroundEnabled =
+    localStorage.getItem(MIST_BG_ENABLED_KEY) !== "false";
+
+let speakingRate =
+    parseFloat(
+        localStorage.getItem(SPEAKING_RATE_KEY)
+    ) || 0.95;
+
+let speakingPitch =
+    parseFloat(
+        localStorage.getItem(SPEAKING_PITCH_KEY)
+    ) || 0.85;
+
+let showTimestamps =
+    localStorage.getItem(SHOW_TIMESTAMPS_KEY) === "true";
+
+let instantResponses =
+    localStorage.getItem(INSTANT_RESPONSES_KEY) === "true";
+
+let enableMemory =
+    localStorage.getItem(ENABLE_MEMORY_KEY) === "true";
 
 
 /* =========================================================
@@ -3617,6 +4145,48 @@ function logoSVG() {
 
 
 /* =========================================================
+   MESSAGE TIMESTAMP
+========================================================= */
+
+function formatTimestamp(ts) {
+
+    if (!ts) {
+        return "";
+    }
+
+
+    return new Date(ts).toLocaleTimeString(
+
+        [],
+
+        {
+            hour: "numeric",
+            minute: "2-digit"
+        }
+
+    );
+
+}
+
+
+function createTimestampLabel(ts) {
+
+    const label =
+        document.createElement("span");
+
+    label.className =
+        "message-timestamp";
+
+    label.textContent =
+        formatTimestamp(ts);
+
+
+    return label;
+
+}
+
+
+/* =========================================================
    MESSAGE COPY BUTTON
 ========================================================= */
 
@@ -4086,9 +4656,9 @@ function speakText(
     }
 
 
-    utterance.rate = 0.95;
+    utterance.rate = speakingRate;
 
-    utterance.pitch = 0.85;
+    utterance.pitch = speakingPitch;
 
 
     utterance.onend =
@@ -4209,7 +4779,10 @@ function renderMessages(messageArray) {
                 appendMessage(
                     "user",
                     message.content,
-                    false
+                    false,
+                    false,
+                    message.content,
+                    message.timestamp
                 );
 
             } else if (
@@ -4217,7 +4790,8 @@ function renderMessages(messageArray) {
             ) {
 
                 appendStoredAssistant(
-                    message.content
+                    message.content,
+                    message.timestamp
                 );
 
             }
@@ -4262,7 +4836,9 @@ function appendMessage(
 
     generating = false,
 
-    copyText = content
+    copyText = content,
+
+    timestamp = Date.now()
 
 ) {
 
@@ -4292,6 +4868,12 @@ function appendMessage(
 
     actions.className =
         "message-actions";
+
+    actions.appendChild(
+        createTimestampLabel(
+            timestamp
+        )
+    );
 
     actions.appendChild(
         createCopyButton(
@@ -4365,7 +4947,13 @@ function appendMessage(
    APPEND SAVED ASSISTANT
 ========================================================= */
 
-function appendStoredAssistant(content) {
+function appendStoredAssistant(rawContent, timestamp) {
+
+    const content =
+        autoFenceCode(
+            rawContent
+        );
+
 
     const row =
         document.createElement("div");
@@ -4390,6 +4978,12 @@ function appendStoredAssistant(content) {
 
     actions.className =
         "message-actions";
+
+    actions.appendChild(
+        createTimestampLabel(
+            timestamp
+        )
+    );
 
     actions.appendChild(
         createCopyButton(
@@ -5861,7 +6455,9 @@ async function typeAssistantResponse(
 ) {
 
     const parts =
-        parseResponse(text);
+        parseResponse(
+            autoFenceCode(text)
+        );
 
 
     for (
@@ -6193,7 +6789,11 @@ function updateMistBackground() {
 
         messages.classList.contains(
             "active"
-        );
+        )
+
+        ||
+
+        !mistBackgroundEnabled;
 
 
     mistBackground.classList.toggle(
@@ -6356,13 +6956,20 @@ async function sendMessage(text) {
         );
 
 
+    const userTimestamp =
+        Date.now();
+
+
     chat.messages.push({
 
         role:
             "user",
 
         content:
-            text
+            text,
+
+        timestamp:
+            userTimestamp
 
     });
 
@@ -6391,7 +6998,15 @@ async function sendMessage(text) {
 
         "user",
 
-        text
+        text,
+
+        true,
+
+        false,
+
+        text,
+
+        userTimestamp
 
     );
 
@@ -6479,6 +7094,15 @@ async function sendMessage(text) {
         actions.className =
             "message-actions";
 
+        const assistantTimestamp =
+            Date.now();
+
+        actions.appendChild(
+            createTimestampLabel(
+                assistantTimestamp
+            )
+        );
+
         actions.appendChild(
             createCopyButton(
                 () => reply
@@ -6523,13 +7147,29 @@ async function sendMessage(text) {
         updateAssistantLogoVisibility();
 
 
-        await typeAssistantResponse(
+        if (instantResponses) {
 
-            container,
+            renderFormattedContent(
 
-            reply
+                container,
 
-        );
+                reply,
+
+                false
+
+            );
+
+        } else {
+
+            await typeAssistantResponse(
+
+                container,
+
+                reply
+
+            );
+
+        }
 
 
         logo.classList.remove(
@@ -6553,7 +7193,10 @@ async function sendMessage(text) {
                 "assistant",
 
             content:
-                reply
+                reply,
+
+            timestamp:
+                assistantTimestamp
 
         });
 
@@ -6566,9 +7209,25 @@ async function sendMessage(text) {
         thinking.stop();
 
 
+        console.error(
+            "Mist response generation failed:",
+            error
+        );
+
+
         const message =
-            error.message ||
-            "Something went wrong while contacting the AI.";
+            "Failed to generate a response.";
+
+        const errorTimestamp =
+            Date.now();
+
+
+        showToast(
+
+            "Mist couldn't generate a response. Please check your " +
+            "internet connection and try again in a few minutes."
+
+        );
 
 
         const bubble =
@@ -6582,7 +7241,9 @@ async function sendMessage(text) {
 
                 true,
 
-                message
+                message,
+
+                errorTimestamp
 
             );
 
@@ -6590,13 +7251,22 @@ async function sendMessage(text) {
         updateAssistantLogoVisibility();
 
 
-        await typeText(
+        if (instantResponses) {
 
-            bubble,
+            bubble.textContent =
+                message;
 
-            message
+        } else {
 
-        );
+            await typeText(
+
+                bubble,
+
+                message
+
+            );
+
+        }
 
 
         const errorLogo =
@@ -6621,7 +7291,10 @@ async function sendMessage(text) {
                 "assistant",
 
             content:
-                message
+                message,
+
+            timestamp:
+                errorTimestamp
 
         });
 
@@ -6636,6 +7309,110 @@ async function sendMessage(text) {
 /* =========================================================
    GROQ REQUEST
 ========================================================= */
+
+/* =========================================================
+   MEMORY (OTHER PAST CHATS)
+
+   When enabled, pulls a short snippet from each of the
+   person's most recent OTHER chats (not the one currently
+   open) and hands it to Mist as optional background context.
+   Deleted chats are gone from `chats` entirely, so they're
+   naturally excluded — this only ever sees what's still on
+   the device.
+========================================================= */
+
+function buildMemoryContext() {
+
+    if (!enableMemory) {
+
+        return "";
+
+    }
+
+
+    const otherChats =
+        chats
+
+            .filter(
+                c => c.id !== currentChatId
+            )
+
+            .sort(
+
+                (a, b) =>
+                    (b.createdAt || 0) -
+                    (a.createdAt || 0)
+
+            )
+
+            .slice(0, 5);
+
+
+    if (!otherChats.length) {
+
+        return "";
+
+    }
+
+
+    const snippets =
+        otherChats.map(
+
+            function(c) {
+
+                const firstUser =
+                    (c.messages || []).find(
+                        m => m.role === "user"
+                    );
+
+                const firstAssistant =
+                    (c.messages || []).find(
+                        m => m.role === "assistant"
+                    );
+
+
+                const userSnippet =
+                    firstUser
+                        ? firstUser.content.slice(0, 180)
+                        : "";
+
+                const assistantSnippet =
+                    firstAssistant
+                        ? firstAssistant.content.slice(0, 180)
+                        : "";
+
+
+                return (
+
+                    '- "' +
+                    (c.title || "Untitled chat") +
+                    '": ' +
+                    userSnippet +
+                    (
+                        assistantSnippet
+                            ? " → " + assistantSnippet
+                            : ""
+                    )
+
+                );
+
+            }
+
+        );
+
+
+    return (
+
+        "\n\nHere is brief context from some of the person's other " +
+        "recent chats with you on this device (only bring any of this " +
+        "up if it's actually relevant to what they're asking right now " +
+        "— don't reference it unprompted):\n" +
+        snippets.join("\n")
+
+    );
+
+}
+
 
 async function requestGroq(
 
@@ -6727,7 +7504,9 @@ async function requestGroq(
 
         "One more reminder because it matters: wrap ALL code in a fenced " +
         "code block (```language ... ```) — never write code inline in a " +
-        "sentence, no matter how short it is.";
+        "sentence, no matter how short it is." +
+
+        buildMemoryContext();
 
 
     const response =
@@ -7172,6 +7951,10 @@ centerInput.addEventListener(
 
             !event.shiftKey
 
+            &&
+
+            sendOnEnter
+
         ) {
 
             event.preventDefault();
@@ -7207,6 +7990,10 @@ bottomInput.addEventListener(
             &&
 
             !event.shiftKey
+
+            &&
+
+            sendOnEnter
 
         ) {
 
@@ -8054,6 +8841,485 @@ autoScrollToggle.addEventListener(
 );
 
 
+document
+
+    .querySelectorAll(
+        ".settings-tab"
+    )
+
+    .forEach(
+
+        function(tab) {
+
+            tab.addEventListener(
+
+                "click",
+
+                function() {
+
+                    const section =
+                        tab.dataset.settingsSection;
+
+
+                    document
+
+                        .querySelectorAll(
+                            ".settings-tab"
+                        )
+
+                        .forEach(
+
+                            t =>
+                                t.classList.toggle(
+                                    "active",
+                                    t === tab
+                                )
+
+                        );
+
+
+                    document
+
+                        .querySelectorAll(
+                            ".settings-section"
+                        )
+
+                        .forEach(
+
+                            s =>
+                                s.classList.toggle(
+                                    "active",
+                                    s.dataset.settingsSection === section
+                                )
+
+                        );
+
+                }
+
+            );
+
+        }
+
+    );
+
+
+const sendOnEnterToggle =
+    document.getElementById(
+        "sendOnEnterToggle"
+    );
+
+const mistBackgroundToggle =
+    document.getElementById(
+        "mistBackgroundToggle"
+    );
+
+const speakingRateSlider =
+    document.getElementById(
+        "speakingRateSlider"
+    );
+
+const speakingPitchSlider =
+    document.getElementById(
+        "speakingPitchSlider"
+    );
+
+const exportChatsButton =
+    document.getElementById(
+        "exportChatsButton"
+    );
+
+const clearChatsButton =
+    document.getElementById(
+        "clearChatsButton"
+    );
+
+
+function updateSendOnEnterToggle() {
+
+    sendOnEnterToggle.classList.toggle(
+
+        "active",
+
+        sendOnEnter
+
+    );
+
+}
+
+
+function updateMistBackgroundToggle() {
+
+    mistBackgroundToggle.classList.toggle(
+
+        "active",
+
+        mistBackgroundEnabled
+
+    );
+
+}
+
+
+sendOnEnterToggle.addEventListener(
+
+    "click",
+
+    function() {
+
+        sendOnEnter =
+            !sendOnEnter;
+
+
+        localStorage.setItem(
+
+            SEND_ON_ENTER_KEY,
+
+            sendOnEnter
+                ? "true"
+                : "false"
+
+        );
+
+
+        updateSendOnEnterToggle();
+
+    }
+
+);
+
+
+mistBackgroundToggle.addEventListener(
+
+    "click",
+
+    function() {
+
+        mistBackgroundEnabled =
+            !mistBackgroundEnabled;
+
+
+        localStorage.setItem(
+
+            MIST_BG_ENABLED_KEY,
+
+            mistBackgroundEnabled
+                ? "true"
+                : "false"
+
+        );
+
+
+        updateMistBackgroundToggle();
+
+        updateMistBackground();
+
+    }
+
+);
+
+
+const showTimestampsToggle =
+    document.getElementById(
+        "showTimestampsToggle"
+    );
+
+const instantResponsesToggle =
+    document.getElementById(
+        "instantResponsesToggle"
+    );
+
+const enableMemoryToggle =
+    document.getElementById(
+        "enableMemoryToggle"
+    );
+
+
+function updateShowTimestampsToggle() {
+
+    showTimestampsToggle.classList.toggle(
+
+        "active",
+
+        showTimestamps
+
+    );
+
+
+    document.body.classList.toggle(
+
+        "show-timestamps",
+
+        showTimestamps
+
+    );
+
+}
+
+
+function updateInstantResponsesToggle() {
+
+    instantResponsesToggle.classList.toggle(
+
+        "active",
+
+        instantResponses
+
+    );
+
+}
+
+
+function updateEnableMemoryToggle() {
+
+    enableMemoryToggle.classList.toggle(
+
+        "active",
+
+        enableMemory
+
+    );
+
+}
+
+
+showTimestampsToggle.addEventListener(
+
+    "click",
+
+    function() {
+
+        showTimestamps =
+            !showTimestamps;
+
+
+        localStorage.setItem(
+
+            SHOW_TIMESTAMPS_KEY,
+
+            showTimestamps
+                ? "true"
+                : "false"
+
+        );
+
+
+        updateShowTimestampsToggle();
+
+    }
+
+);
+
+
+instantResponsesToggle.addEventListener(
+
+    "click",
+
+    function() {
+
+        instantResponses =
+            !instantResponses;
+
+
+        localStorage.setItem(
+
+            INSTANT_RESPONSES_KEY,
+
+            instantResponses
+                ? "true"
+                : "false"
+
+        );
+
+
+        updateInstantResponsesToggle();
+
+    }
+
+);
+
+
+enableMemoryToggle.addEventListener(
+
+    "click",
+
+    function() {
+
+        enableMemory =
+            !enableMemory;
+
+
+        localStorage.setItem(
+
+            ENABLE_MEMORY_KEY,
+
+            enableMemory
+                ? "true"
+                : "false"
+
+        );
+
+
+        updateEnableMemoryToggle();
+
+    }
+
+);
+
+
+speakingRateSlider.value =
+    speakingRate;
+
+speakingPitchSlider.value =
+    speakingPitch;
+
+
+speakingRateSlider.addEventListener(
+
+    "input",
+
+    function() {
+
+        speakingRate =
+            parseFloat(
+                speakingRateSlider.value
+            );
+
+
+        localStorage.setItem(
+
+            SPEAKING_RATE_KEY,
+
+            String(speakingRate)
+
+        );
+
+    }
+
+);
+
+
+speakingPitchSlider.addEventListener(
+
+    "input",
+
+    function() {
+
+        speakingPitch =
+            parseFloat(
+                speakingPitchSlider.value
+            );
+
+
+        localStorage.setItem(
+
+            SPEAKING_PITCH_KEY,
+
+            String(speakingPitch)
+
+        );
+
+    }
+
+);
+
+
+exportChatsButton.addEventListener(
+
+    "click",
+
+    function() {
+
+        const blob =
+            new Blob(
+
+                [
+                    JSON.stringify(
+                        chats,
+                        null,
+                        2
+                    )
+                ],
+
+                {
+                    type: "application/json"
+                }
+
+            );
+
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+
+        const link =
+            document.createElement(
+                "a"
+            );
+
+        link.href =
+            url;
+
+        link.download =
+            "mist-chats.json";
+
+        document.body.appendChild(
+            link
+        );
+
+        link.click();
+
+        link.remove();
+
+
+        URL.revokeObjectURL(
+            url
+        );
+
+    }
+
+);
+
+
+clearChatsButton.addEventListener(
+
+    "click",
+
+    function() {
+
+        const confirmed =
+            window.confirm(
+
+                "Delete every chat on this device? This can't be undone."
+
+            );
+
+
+        if (!confirmed) {
+            return;
+        }
+
+
+        chats = [];
+
+        currentChatId = null;
+
+        saveChats();
+
+        renderChatList();
+
+        newChat();
+
+        closeOverlay(
+            "settingsOverlay"
+        );
+
+    }
+
+);
+
+
 const voiceSelect =
     document.getElementById(
         "voiceSelect"
@@ -8401,6 +9667,93 @@ function closeOverlay(id) {
 
 
 /* =========================================================
+   TOAST NOTIFICATIONS
+========================================================= */
+
+const toastContainer =
+    document.getElementById(
+        "toastContainer"
+    );
+
+
+function showToast(text) {
+
+    const toast =
+        document.createElement("div");
+
+    toast.className =
+        "toast";
+
+    toast.innerHTML =
+
+        '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" ' +
+        'stroke="currentColor" stroke-width="2" stroke-linecap="round" ' +
+        'stroke-linejoin="round">' +
+        '<path d="M12 9v4"></path>' +
+        '<path d="M12 17h.01"></path>' +
+        '<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 ' +
+        '1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"></path>' +
+        '</svg>' +
+        '<div class="toast-text"></div>' +
+        '<button class="toast-close" type="button" aria-label="Dismiss">✕</button>';
+
+
+    toast.querySelector(
+        ".toast-text"
+    ).textContent =
+        text;
+
+
+    function dismiss() {
+
+        if (!toast.parentNode) {
+            return;
+        }
+
+        toast.classList.add(
+            "leaving"
+        );
+
+        setTimeout(
+
+            function() {
+
+                toast.remove();
+
+            },
+
+            180
+
+        );
+
+    }
+
+
+    toast.querySelector(
+        ".toast-close"
+    ).addEventListener(
+
+        "click",
+
+        dismiss
+
+    );
+
+
+    toastContainer.appendChild(
+        toast
+    );
+
+
+    setTimeout(
+        dismiss,
+        8000
+    );
+
+}
+
+
+/* =========================================================
    CLOSE OVERLAYS WHEN CLICKING OUTSIDE MODAL
 ========================================================= */
 
@@ -8492,6 +9845,16 @@ updateAutoScrollToggle();
 
 updateAutoSpeakToggle();
 
+updateSendOnEnterToggle();
+
+updateMistBackgroundToggle();
+
+updateShowTimestampsToggle();
+
+updateInstantResponsesToggle();
+
+updateEnableMemoryToggle();
+
 if (!speechSupported) {
 
     voiceSelect.disabled = true;
@@ -8500,6 +9863,10 @@ if (!speechSupported) {
         '<option value="">Not supported in this browser</option>';
 
     autoSpeakToggle.disabled = true;
+
+    speakingRateSlider.disabled = true;
+
+    speakingPitchSlider.disabled = true;
 
 }
 
