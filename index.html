@@ -3254,7 +3254,7 @@ select.settings-input {
 
 ========================================================= */
 
-const GROQ_API_KEY = "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";
+const GROQ_API_KEY = "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";
 
 
 /*
@@ -7509,6 +7509,26 @@ async function requestGroq(
         buildMemoryContext();
 
 
+    const apiMessages =
+        conversation.map(
+
+            function(message) {
+
+                return {
+
+                    role:
+                        message.role,
+
+                    content:
+                        message.content
+
+                };
+
+            }
+
+        );
+
+
     const response =
         await fetch(
 
@@ -7549,7 +7569,7 @@ async function requestGroq(
 
                             },
 
-                            ...conversation
+                            ...apiMessages
 
                         ],
 
