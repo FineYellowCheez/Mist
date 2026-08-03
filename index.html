@@ -2276,7 +2276,23 @@ select.settings-input {
             id="newChatButton"
         >
 
-            <span class="sidebar-icon">✎</span>
+            <span class="sidebar-icon">
+
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    width="18"
+                    height="18"
+                >
+                    <path d="M12 5v14" />
+                    <path d="M5 12h14" />
+                </svg>
+
+            </span>
 
             <span class="sidebar-label">
                 New Chat
@@ -2290,7 +2306,23 @@ select.settings-input {
             id="searchButton"
         >
 
-            <span class="sidebar-icon">⌕</span>
+            <span class="sidebar-icon">
+
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    width="18"
+                    height="18"
+                >
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.3-4.3" />
+                </svg>
+
+            </span>
 
             <span class="sidebar-label">
                 Search Chats
@@ -2304,7 +2336,26 @@ select.settings-input {
             id="notesButton"
         >
 
-            <span class="sidebar-icon">▱</span>
+            <span class="sidebar-icon">
+
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    width="18"
+                    height="18"
+                >
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <path d="M14 2v6h6" />
+                    <path d="M16 13H8" />
+                    <path d="M16 17H8" />
+                    <path d="M10 9H8" />
+                </svg>
+
+            </span>
 
             <span class="sidebar-label">
                 Notes
@@ -2318,7 +2369,23 @@ select.settings-input {
             id="stackButton"
         >
 
-            <span class="sidebar-icon">&gt;_</span>
+            <span class="sidebar-icon">
+
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    width="18"
+                    height="18"
+                >
+                    <polyline points="16 18 22 12 16 6" />
+                    <polyline points="8 6 2 12 8 18" />
+                </svg>
+
+            </span>
 
             <span class="sidebar-label">
                 Stack
@@ -2411,7 +2478,23 @@ select.settings-input {
                 id="settingsButton"
             >
 
-                <span class="sidebar-icon">⚙</span>
+                <span class="sidebar-icon">
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        width="18"
+                        height="18"
+                    >
+                        <circle cx="12" cy="12" r="3" />
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                    </svg>
+
+                </span>
 
                 <span class="sidebar-label">
                     Settings
@@ -8363,6 +8446,39 @@ let activeMicButton = null;
 let activeMicTextarea = null;
 
 
+function describeSpeechError(errorCode) {
+
+    switch (errorCode) {
+
+        case "not-allowed":
+        case "service-not-allowed":
+            return (
+                "Microphone access was blocked. Check your browser's " +
+                "site permissions, and make sure this page is served " +
+                "over HTTPS (or localhost) — speech input won't work " +
+                "otherwise."
+            );
+
+        case "audio-capture":
+            return (
+                "No microphone was found. Check that one is connected " +
+                "and enabled."
+            );
+
+        case "network":
+            return (
+                "A network error interrupted speech recognition. " +
+                "Try again."
+            );
+
+        default:
+            return null;
+
+    }
+
+}
+
+
 function createRecognizer() {
 
     const recognition =
@@ -8478,11 +8594,26 @@ function startListening(
 
     recognition.onerror =
 
-        function() {
+        function(event) {
 
             micButton.classList.remove(
                 "listening"
             );
+
+
+            const description =
+                describeSpeechError(
+                    event.error
+                );
+
+
+            if (description) {
+
+                showToast(
+                    description
+                );
+
+            }
 
         };
 
@@ -8502,7 +8633,23 @@ function startListening(
         };
 
 
-    recognition.start();
+    try {
+
+        recognition.start();
+
+    } catch (error) {
+
+        micButton.classList.remove(
+            "listening"
+        );
+
+        activeRecognition = null;
+
+        showToast(
+            "Couldn't start the microphone. Try again in a moment."
+        );
+
+    }
 
 }
 
@@ -8851,9 +8998,24 @@ function startConversationListening() {
 
     recognition.onerror =
 
-        function() {
+        function(event) {
 
             conversationRecognition = null;
+
+
+            const description =
+                describeSpeechError(
+                    event.error
+                );
+
+
+            if (description) {
+
+                showToast(
+                    description
+                );
+
+            }
 
 
             if (conversationActive) {
@@ -8876,7 +9038,23 @@ function startConversationListening() {
         };
 
 
-    recognition.start();
+    try {
+
+        recognition.start();
+
+    } catch (error) {
+
+        conversationRecognition = null;
+
+        setConversationState(
+            "idle"
+        );
+
+        showToast(
+            "Couldn't start the microphone. Try again in a moment."
+        );
+
+    }
 
 }
 
