@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mist</title>
+<title>Shard</title>
 <link
     rel="icon"
     type="image/svg+xml"
-    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='black'/%3E%3Cg fill='none' stroke='%23f3f3f3' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M32 32 C 28 29 28 21 35 19 C 40 18 44 20 44 24'/%3E%3Cpath d='M32 32 C 28 29 28 21 35 19 C 40 18 44 20 44 24' transform='rotate(120 32 32)'/%3E%3Cpath d='M32 32 C 28 29 28 21 35 19 C 40 18 44 20 44 24' transform='rotate(240 32 32)'/%3E%3C/g%3E%3Ccircle cx='32' cy='32' r='4' fill='%23f3f3f3'/%3E%3C/svg%3E"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='black'/%3E%3Cg fill='none' stroke='%23f3f3f3' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolygon points='32,32 29,17 35,17'/%3E%3Cpolygon points='32,32 29,17 35,17' transform='rotate(60 32 32)'/%3E%3Cpolygon points='32,32 29,17 35,17' transform='rotate(120 32 32)'/%3E%3Cpolygon points='32,32 29,17 35,17' transform='rotate(180 32 32)'/%3E%3Cpolygon points='32,32 29,17 35,17' transform='rotate(240 32 32)'/%3E%3Cpolygon points='32,32 29,17 35,17' transform='rotate(300 32 32)'/%3E%3C/g%3E%3Cpolygon points='32,23 41,32 32,41 23,32' fill='%23f3f3f3'/%3E%3C/svg%3E"
 >
 
 <!-- KaTeX: renders math notation (sqrt, fractions, exponents, etc.) -->
@@ -185,7 +185,7 @@ button {
     margin-bottom: 7px;
 }
 
-.mist-logo {
+.shard-logo {
     position: relative;
     z-index: 1;
     width: 40px;
@@ -214,7 +214,7 @@ button {
     transition: opacity 0.15s ease;
 }
 
-.sidebar.collapsed .brand:hover .mist-logo {
+.sidebar.collapsed .brand:hover .shard-logo {
     opacity: 0;
 }
 
@@ -222,56 +222,91 @@ button {
     opacity: 1;
 }
 
-.mist-logo svg {
+.shard-logo svg {
     width: 100%;
     height: 100%;
     display: block;
 }
 
-.mist-arm {
+.shard-facet {
     fill: none;
     stroke: #f3f3f3;
-    stroke-width: 5;
+    stroke-width: 4;
     stroke-linecap: round;
     stroke-linejoin: round;
 }
 
-.mist-core {
+.shard-facet-1 { opacity: 1; }
+.shard-facet-2 { opacity: 0.6; }
+.shard-facet-3 { opacity: 1; }
+.shard-facet-4 { opacity: 0.6; }
+.shard-facet-5 { opacity: 1; }
+.shard-facet-6 { opacity: 0.6; }
+
+.shard-inner-facet {
+    fill: rgba(243, 243, 243, 0.25);
+    stroke: #f3f3f3;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.shard-core {
     fill: #f3f3f3;
     transform-box: fill-box;
     transform-origin: center;
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.6));
+}
+
+.shard-logo svg,
+.assistant-logo svg,
+.thinking-logo svg {
+    overflow: visible;
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.18));
 }
 
 
 /* =========================================================
-   MIST LOGO — GENERATING ANIMATION
+   SHARD LOGO — ANIMATION
+   Completely still at rest. Motion only plays while a
+   response is actively generating (.generating class).
 ========================================================= */
 
-.generating .mist-swirl {
+.shard-outer-ring,
+.shard-inner-ring {
     transform-origin: 32px 32px;
-    animation: mistSwirlSpin 2.4s linear infinite;
 }
 
-.generating .mist-core {
-    animation: mistCorePulse 1.2s ease-in-out infinite;
+.generating .shard-outer-ring {
+    animation: shardOuterSpin 2.6s linear infinite;
 }
 
-@keyframes mistSwirlSpin {
-
-    to {
-        transform: rotate(360deg);
-    }
-
+.generating .shard-inner-ring {
+    animation: shardInnerSpin 1.5s linear infinite reverse;
 }
 
-@keyframes mistCorePulse {
+.generating .shard-core {
+    animation: shardCorePulse 1.1s ease-in-out infinite;
+}
+
+@keyframes shardOuterSpin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes shardInnerSpin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes shardCorePulse {
 
     0%, 100% {
         transform: scale(1);
+        filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.6));
     }
 
     50% {
-        transform: scale(1.4);
+        transform: scale(1.35);
+        filter: drop-shadow(0 0 11px rgba(255, 255, 255, 0.95));
     }
 
 }
@@ -1924,20 +1959,32 @@ select.settings-input {
 ========================================================= */
 
 .stack-modal {
-    width: min(1000px, 100%);
+    width: min(1080px, 100%);
     height: min(760px, calc(100vh - 40px));
     display: flex;
     flex-direction: column;
 }
 
-.stack-tabs {
+.stack-toolbar {
     display: flex;
-    gap: 5px;
-    padding: 10px 12px;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
     border-bottom: 1px solid #444;
 }
 
+.stack-lang-tabs {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    flex-shrink: 1;
+    min-width: 0;
+}
+
 .stack-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
     border: 0;
     border-radius: 7px;
     background: transparent;
@@ -1945,6 +1992,7 @@ select.settings-input {
     padding: 7px 12px;
     cursor: pointer;
     font-size: 13px;
+    transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .stack-tab:hover,
@@ -1953,24 +2001,181 @@ select.settings-input {
     color: white;
 }
 
-.stack-editor-area {
-    flex: 1;
-    min-height: 0;
-    padding: 12px;
+.stack-tab-dot {
+    width: 7px;
+    height: 7px;
+    min-width: 7px;
+    border-radius: 50%;
 }
 
-.stack-editor,
-.stack-preview {
-    width: 100%;
-    height: 100%;
-    min-height: 250px;
+.stack-dot-html {
+    background: #e8785a;
+}
+
+.stack-dot-css {
+    background: #4a9ee0;
+}
+
+.stack-dot-js {
+    background: #e0c23a;
+}
+
+.stack-toolbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.stack-ask-mist {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.stack-ask-mist svg {
+    width: 15px;
+    height: 15px;
+}
+
+.stack-add-lang {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.stack-lang-library {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    width: 220px;
+    max-height: 320px;
+    overflow-y: auto;
+    background: #303030;
+    border: 1px solid #4a4a4a;
     border-radius: 10px;
+    padding: 6px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+    display: none;
+    flex-direction: column;
+    gap: 2px;
+    z-index: 20;
+}
+
+.stack-lang-library.visible {
+    display: flex;
+}
+
+.stack-lang-option {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: #e7e7e7;
+    padding: 8px 10px;
+    font-size: 13px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.stack-lang-option:hover {
+    background: #3d3d3d;
+}
+
+.stack-lang-option.added {
+    color: #888;
+}
+
+.stack-lang-option-check {
+    margin-left: auto;
+    width: 14px;
+    height: 14px;
+    opacity: 0;
+}
+
+.stack-lang-option.added .stack-lang-option-check {
+    opacity: 1;
+}
+
+.stack-tab-remove {
+    display: none;
+    margin-left: 2px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+}
+
+.stack-tab-remove:hover {
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.stack-tab.removable:hover .stack-tab-remove {
+    display: inline-flex;
+}
+
+.stack-icon-button {
+    width: 32px;
+    height: 32px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: #aaa;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.stack-icon-button svg {
+    width: 16px;
+    height: 16px;
+}
+
+.stack-icon-button:hover {
+    background: #444;
+    color: #fff;
+}
+
+.stack-action {
+    border: 1px solid #555;
+    border-radius: 8px;
+    background: #414141;
+    color: white;
+    padding: 7px 16px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background-color 0.15s ease;
+}
+
+.stack-action:hover {
+    background: #4b4b4b;
+}
+
+.stack-workspace {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+}
+
+.stack-editor-pane {
+    width: 50%;
+    min-width: 0;
+    padding: 12px;
+    border-right: 1px solid #444;
 }
 
 .stack-editor {
     display: block;
+    width: 100%;
+    height: 100%;
     resize: none;
     border: 1px solid #4b4b4b;
+    border-radius: 10px;
     outline: none;
     background: #202020;
     color: #e8e8e8;
@@ -1983,34 +2188,126 @@ select.settings-input {
     line-height: 1.55;
 }
 
-.stack-preview {
-    display: none;
-    border: 0;
-    background: white;
+.stack-preview-pane {
+    width: 50%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    gap: 10px;
 }
 
-.stack-bottom {
-    height: 55px;
-    min-height: 55px;
-    padding: 0 12px;
-    border-top: 1px solid #444;
+.stack-preview-toolbar {
     display: flex;
-    justify-content: flex-end;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.stack-preview-label {
+    color: #999;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+}
+
+.stack-preview-actions {
+    display: flex;
     align-items: center;
     gap: 8px;
 }
 
-.stack-action {
-    border: 1px solid #555;
-    border-radius: 8px;
-    background: #414141;
-    color: white;
-    padding: 8px 14px;
+.stack-autorun {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #999;
+    font-size: 12px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.stack-autorun input {
+    accent-color: #858585;
     cursor: pointer;
 }
 
-.stack-action:hover {
-    background: #4b4b4b;
+.stack-preview {
+    flex: 3;
+    min-height: 0;
+    display: block;
+    width: 100%;
+    border: 1px solid #4b4b4b;
+    border-radius: 10px;
+    background: white;
+}
+
+.stack-console {
+    flex: 1;
+    min-height: 70px;
+    max-height: 160px;
+    overflow-y: auto;
+    border: 1px solid #4b4b4b;
+    border-radius: 10px;
+    background: #202020;
+    padding: 8px 10px;
+    font-family:
+        "Cascadia Code",
+        Consolas,
+        monospace;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.stack-console-empty {
+    color: #666;
+}
+
+.stack-console-line {
+    color: #ddd;
+    border-bottom: 1px solid #2c2c2c;
+    padding: 3px 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.stack-console-line:last-child {
+    border-bottom: 0;
+}
+
+.stack-console-line.level-warn {
+    color: #e0c23a;
+}
+
+.stack-console-line.level-error {
+    color: #e0685a;
+}
+
+@media (max-width: 800px) {
+
+    .stack-workspace {
+        flex-direction: column;
+        overflow-y: auto;
+    }
+
+    .stack-editor-pane,
+    .stack-preview-pane {
+        width: 100%;
+    }
+
+    .stack-editor-pane {
+        border-right: 0;
+        border-bottom: 1px solid #444;
+    }
+
+    .stack-editor {
+        min-height: 220px;
+    }
+
+    .stack-preview {
+        min-height: 220px;
+    }
+
 }
 
 
@@ -2297,37 +2594,26 @@ select.settings-input {
 
         <div class="brand">
 
-            <div class="mist-logo">
+            <div class="shard-logo">
 
                 <svg viewBox="0 0 64 64">
 
-                    <g class="mist-swirl">
-
-                        <path
-                            class="mist-arm mist-arm-1"
-                            d="M32 32 C 28 29 28 21 35 19 C 40 18 44 20 44 24"
-                        />
-
-                        <path
-                            class="mist-arm mist-arm-2"
-                            d="M32 32 C 28 29 28 21 35 19 C 40 18 44 20 44 24"
-                            transform="rotate(120 32 32)"
-                        />
-
-                        <path
-                            class="mist-arm mist-arm-3"
-                            d="M32 32 C 28 29 28 21 35 19 C 40 18 44 20 44 24"
-                            transform="rotate(240 32 32)"
-                        />
-
+                    <g class="shard-outer-ring">
+                        <polygon class="shard-facet shard-facet-1" points="32,32 29,17 35,17" />
+                        <polygon class="shard-facet shard-facet-2" points="32,32 29,17 35,17" transform="rotate(60 32 32)" />
+                        <polygon class="shard-facet shard-facet-3" points="32,32 29,17 35,17" transform="rotate(120 32 32)" />
+                        <polygon class="shard-facet shard-facet-4" points="32,32 29,17 35,17" transform="rotate(180 32 32)" />
+                        <polygon class="shard-facet shard-facet-5" points="32,32 29,17 35,17" transform="rotate(240 32 32)" />
+                        <polygon class="shard-facet shard-facet-6" points="32,32 29,17 35,17" transform="rotate(300 32 32)" />
                     </g>
 
-                    <circle
-                        class="mist-core"
-                        cx="32"
-                        cy="32"
-                        r="4"
-                    />
+                    <g class="shard-inner-ring">
+                        <polygon class="shard-inner-facet" points="32,32 30,24 34,24" />
+                        <polygon class="shard-inner-facet" points="32,32 30,24 34,24" transform="rotate(120 32 32)" />
+                        <polygon class="shard-inner-facet" points="32,32 30,24 34,24" transform="rotate(240 32 32)" />
+                    </g>
+
+                    <polygon class="shard-core" points="32,23 41,32 32,41 23,32" />
 
                 </svg>
 
@@ -3081,72 +3367,185 @@ select.settings-input {
         </div>
 
 
-        <div class="stack-tabs">
+        <div class="stack-toolbar">
 
-            <button
-                class="stack-tab active"
-                data-language="html"
-            >
-                HTML
-            </button>
+            <div class="stack-lang-tabs" id="stackLangTabs">
 
-            <button
-                class="stack-tab"
-                data-language="css"
-            >
-                CSS
-            </button>
+                <button
+                    class="stack-tab active"
+                    data-language="html"
+                >
+                    <span class="stack-tab-dot stack-dot-html"></span>
+                    HTML
+                </button>
 
-            <button
-                class="stack-tab"
-                data-language="js"
-            >
-                JavaScript
-            </button>
+                <button
+                    class="stack-tab"
+                    data-language="css"
+                >
+                    <span class="stack-tab-dot stack-dot-css"></span>
+                    CSS
+                </button>
 
-            <button
-                class="stack-tab"
-                data-language="preview"
-            >
-                Preview
-            </button>
+                <button
+                    class="stack-tab"
+                    data-language="js"
+                >
+                    <span class="stack-tab-dot stack-dot-js"></span>
+                    JS
+                </button>
+
+            </div>
+
+
+            <div class="stack-add-lang">
+
+                <button
+                    class="stack-icon-button"
+                    id="stackAddLangButton"
+                    type="button"
+                    title="Add a language"
+                    aria-label="Add a language"
+                >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 5v14" />
+                        <path d="M5 12h14" />
+                    </svg>
+                </button>
+
+                <div
+                    class="stack-lang-library"
+                    id="stackLangLibrary"
+                ></div>
+
+            </div>
+
+
+            <div class="stack-toolbar-actions">
+
+                <button
+                    class="stack-action stack-ask-mist"
+                    id="stackAskMist"
+                    type="button"
+                >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2 C 10 6 6 8 6 13 a6 6 0 0 0 12 0 C 18 8 14 6 12 2Z" />
+                    </svg>
+                    Ask Shard
+                </button>
+
+                <button
+                    class="stack-icon-button"
+                    id="stackReset"
+                    type="button"
+                    title="Reset to the starter template"
+                    aria-label="Reset to the starter template"
+                >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 12a9 9 0 1 0 3-6.7" />
+                        <path d="M3 4v5h5" />
+                    </svg>
+                </button>
+
+                <button
+                    class="stack-icon-button"
+                    id="stackDownload"
+                    type="button"
+                    title="Download the current file"
+                    aria-label="Download the current file"
+                >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 3v12" />
+                        <path d="m7 10 5 5 5-5" />
+                        <path d="M5 21h14" />
+                    </svg>
+                </button>
+
+                <button
+                    class="stack-action"
+                    id="stackRun"
+                    type="button"
+                >
+                    Run
+                </button>
+
+            </div>
 
         </div>
 
 
-        <div class="stack-editor-area">
+        <div class="stack-workspace">
 
-            <textarea
-                class="stack-editor"
-                id="stackEditor"
-                spellcheck="false"
-            ></textarea>
+            <div class="stack-editor-pane">
 
+                <textarea
+                    class="stack-editor"
+                    id="stackEditor"
+                    spellcheck="false"
+                ></textarea>
 
-            <iframe
-                class="stack-preview"
-                id="stackPreview"
-                sandbox="allow-scripts"
-            ></iframe>
-
-        </div>
+            </div>
 
 
-        <div class="stack-bottom">
+            <div class="stack-preview-pane">
 
-            <button
-                class="stack-action"
-                id="stackClear"
-            >
-                Clear
-            </button>
+                <div class="stack-preview-toolbar">
 
-            <button
-                class="stack-action"
-                id="stackRun"
-            >
-                Run
-            </button>
+                    <span class="stack-preview-label">
+                        Preview
+                    </span>
+
+                    <div class="stack-preview-actions">
+
+                        <label class="stack-autorun">
+
+                            <input
+                                type="checkbox"
+                                id="stackAutoRun"
+                                checked
+                            >
+                            Auto-run
+
+                        </label>
+
+                        <button
+                            class="stack-icon-button"
+                            id="stackOpenNewTab"
+                            type="button"
+                            title="Open preview in a new tab"
+                            aria-label="Open preview in a new tab"
+                        >
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                                <path d="M15 3h6v6" />
+                                <path d="M10 14 21 3" />
+                            </svg>
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <iframe
+                    class="stack-preview"
+                    id="stackPreview"
+                    sandbox="allow-scripts"
+                ></iframe>
+
+
+                <div
+                    class="stack-console"
+                    id="stackConsole"
+                >
+
+                    <div class="stack-console-empty">
+                        Console output will show up here.
+                    </div>
+
+                </div>
+
+            </div>
 
         </div>
 
@@ -3294,8 +3693,8 @@ select.settings-input {
                         </div>
 
                         <div class="settings-description">
-                            Let Mist know what to call you. Leave this blank
-                            and Mist won't try to use a name at all.
+                            Let Shard know what to call you. Leave this blank
+                            and Shard won't try to use a name at all.
                         </div>
 
                     </div>
@@ -3356,7 +3755,7 @@ select.settings-input {
                         </div>
 
                         <div class="settings-description">
-                            Automatically follow the response while Mist is
+                            Automatically follow the response while Shard is
                             generating it.
                         </div>
 
@@ -3456,7 +3855,7 @@ select.settings-input {
                         </div>
 
                         <div class="settings-description">
-                            Let Mist bring in brief, relevant context from
+                            Let Shard bring in brief, relevant context from
                             your other chats on this device that haven't been
                             deleted — so it doesn't start from zero every
                             time.
@@ -3492,7 +3891,7 @@ select.settings-input {
                         </div>
 
                         <div class="settings-description">
-                            Used when reading Mist's responses aloud. Mist
+                            Used when reading Shard's responses aloud. Shard
                             picks the closest-sounding voice available on
                             your system by default.
                         </div>
@@ -3541,7 +3940,7 @@ select.settings-input {
                         </div>
 
                         <div class="settings-description">
-                            How quickly Mist speaks when reading aloud.
+                            How quickly Shard speaks when reading aloud.
                         </div>
 
                     </div>
@@ -3722,26 +4121,17 @@ select.settings-input {
 /* =========================================================
    GROQ CONFIGURATION
 
-   PUT YOUR API KEY BETWEEN THE QUOTES BELOW.
-
-   Example:
-
-   const GROQ_API_KEY = "gsk_your_key_here";
-
+   ⚠️ SECURITY NOTE: this key is embedded directly in client
+   code, which is required because GitHub Pages only serves
+   static files (no server to keep a secret on). Anyone who
+   opens dev tools on this page can read this key. Set a
+   usage/spending cap on it in your Groq console, and rotate
+   it if you ever see unexpected activity.
 ========================================================= */
 
-const GROQ_API_KEY = "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";
-
-
-/*
-   The model is only used internally for the API request.
-   It is never displayed anywhere in the interface.
-*/
+const GROQ_API_KEY = "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";
 
 const GROQ_MODEL = "openai/gpt-oss-120b";
-
-const GROQ_ENDPOINT =
-    "https://api.groq.com/openai/v1/chat/completions";
 
 
 /* =========================================================
@@ -3845,14 +4235,14 @@ let enableMemory =
    but they all reach the same underlying API model — each
    entry just tweaks response pacing and, for Haze 5, adds a
    personality instruction. All of them still identify as
-   Mist if asked what model they are.
+   Shard if asked what model they are.
 ========================================================= */
 
-const MIST_MODELS = [
+const SHARD_MODELS = [
 
     {
-        id: "vapor-4-5",
-        label: "Vapor 4.5",
+        id: "kairo-4-5",
+        label: "Kairo 4.5",
         typingChunk: 10,
         typingInterval: 3,
         extraDelay: 0,
@@ -3860,8 +4250,8 @@ const MIST_MODELS = [
     },
 
     {
-        id: "vapor-4-4",
-        label: "Vapor 4.4",
+        id: "kairo-4-4",
+        label: "Kairo 4.4",
         typingChunk: 7,
         typingInterval: 4,
         extraDelay: 550,
@@ -3869,8 +4259,8 @@ const MIST_MODELS = [
     },
 
     {
-        id: "vapor-4-3",
-        label: "Vapor 4.3",
+        id: "kairo-4-3",
+        label: "Kairo 4.3",
         typingChunk: 5,
         typingInterval: 5,
         extraDelay: 1200,
@@ -3891,8 +4281,8 @@ const MIST_MODELS = [
     },
 
     {
-        id: "mist-rune-6",
-        label: "Mist Rune 6",
+        id: "rune-6",
+        label: "Rune 6",
         typingChunk: 10,
         typingInterval: 3,
         extraDelay: 0,
@@ -3905,14 +4295,14 @@ const MIST_MODELS = [
 
 let selectedModelId =
     localStorage.getItem(MODEL_STORAGE_KEY) ||
-    MIST_MODELS[0].id;
+    SHARD_MODELS[0].id;
 
 
 function getSelectedModel() {
 
     return (
 
-        MIST_MODELS.find(
+        SHARD_MODELS.find(
 
             model =>
                 model.id === selectedModelId
@@ -3921,7 +4311,7 @@ function getSelectedModel() {
 
         ||
 
-        MIST_MODELS[0]
+        SHARD_MODELS[0]
 
     );
 
@@ -4852,38 +5242,24 @@ function logoSVG() {
 
     return `
 
-        <svg
-            viewBox="0 0 64 64"
-            aria-hidden="true"
-        >
+        <svg viewBox="0 0 64 64" aria-hidden="true">
 
-            <g class="mist-swirl">
-
-                <path
-                    class="mist-arm mist-arm-1"
-                    d="M32 32 C 28 29 28 21 35 19 C 40 18 44 20 44 24"
-                />
-
-                <path
-                    class="mist-arm mist-arm-2"
-                    d="M32 32 C 28 29 28 21 35 19 C 40 18 44 20 44 24"
-                    transform="rotate(120 32 32)"
-                />
-
-                <path
-                    class="mist-arm mist-arm-3"
-                    d="M32 32 C 28 29 28 21 35 19 C 40 18 44 20 44 24"
-                    transform="rotate(240 32 32)"
-                />
-
+            <g class="shard-outer-ring">
+                <polygon class="shard-facet shard-facet-1" points="32,32 29,17 35,17" />
+                <polygon class="shard-facet shard-facet-2" points="32,32 29,17 35,17" transform="rotate(60 32 32)" />
+                <polygon class="shard-facet shard-facet-3" points="32,32 29,17 35,17" transform="rotate(120 32 32)" />
+                <polygon class="shard-facet shard-facet-4" points="32,32 29,17 35,17" transform="rotate(180 32 32)" />
+                <polygon class="shard-facet shard-facet-5" points="32,32 29,17 35,17" transform="rotate(240 32 32)" />
+                <polygon class="shard-facet shard-facet-6" points="32,32 29,17 35,17" transform="rotate(300 32 32)" />
             </g>
 
-            <circle
-                class="mist-core"
-                cx="32"
-                cy="32"
-                r="4"
-            />
+            <g class="shard-inner-ring">
+                <polygon class="shard-inner-facet" points="32,32 30,24 34,24" />
+                <polygon class="shard-inner-facet" points="32,32 30,24 34,24" transform="rotate(120 32 32)" />
+                <polygon class="shard-inner-facet" points="32,32 30,24 34,24" transform="rotate(240 32 32)" />
+            </g>
+
+            <polygon class="shard-core" points="32,23 41,32 32,41 23,32" />
 
         </svg>
 
@@ -5870,7 +6246,7 @@ function appendStoredAssistant(rawContent, timestamp) {
 /* =========================================================
    AUTO-FENCE CODE (SAFETY NET)
 
-   Mist is instructed to always wrap code in a fenced block,
+   Shard is instructed to always wrap code in a fenced block,
    but no model follows formatting instructions 100% of the
    time. As a fallback:
 
@@ -6505,7 +6881,7 @@ function createCodeBlock(
    MARKDOWN RENDERING
 
    Turns plain assistant text into HTML for the pieces of
-   Markdown syntax Mist is asked to use: headings, bold,
+   Markdown syntax Shard is asked to use: headings, bold,
    italic, inline code, tables, horizontal rules, and lists.
    Applied only to the non-code portions of a response.
 ========================================================= */
@@ -8043,7 +8419,7 @@ async function sendMessage(text) {
 
 
         console.error(
-            "Mist response generation failed:",
+            "Shard response generation failed:",
             error
         );
 
@@ -8057,7 +8433,7 @@ async function sendMessage(text) {
 
         showToast(
 
-            "Mist couldn't generate a response. Please check your " +
+            "Shard couldn't generate a response. Please check your " +
             "internet connection and try again in a few minutes."
 
         );
@@ -8148,7 +8524,7 @@ async function sendMessage(text) {
 
    When enabled, pulls a short snippet from each of the
    person's most recent OTHER chats (not the one currently
-   open) and hands it to Mist as optional background context.
+   open) and hands it to Shard as optional background context.
    Deleted chats are gone from `chats` entirely, so they're
    naturally excluded — this only ever sees what's still on
    the device.
@@ -8254,27 +8630,14 @@ async function requestGroq(
 ) {
 
     if (
-        !GROQ_API_KEY.trim()
+        !GROQ_API_KEY ||
+        GROQ_API_KEY === "PASTE_YOUR_GROQ_API_KEY_HERE"
     ) {
-
-        await new Promise(
-
-            resolve =>
-                setTimeout(
-                    resolve,
-                    700
-                )
-
-        );
-
 
         return (
 
-            "Your Groq API key hasn't been added yet. " +
-
-            "Open the HTML file and put your key in the " +
-
-            "GROQ_API_KEY variable near the top of the script."
+            "No Groq API key is set. Open the script and paste your key " +
+            "into the GROQ_API_KEY constant near the top."
 
         );
 
@@ -8286,7 +8649,7 @@ async function requestGroq(
 
     const systemPrompt =
 
-        "You are Mist, a helpful, thoughtful, intelligent AI assistant. " +
+        "You are Shard, a helpful, thoughtful, intelligent AI assistant. " +
 
         "Give clear and useful answers. " +
 
@@ -8332,7 +8695,7 @@ async function requestGroq(
 
         "Regardless of any internal model configuration or persona, if " +
         "asked what model, engine, or AI you are, or who developed you, " +
-        "always say you are Mist — never mention or reveal any internal " +
+        "always say you are Shard — never mention or reveal any internal " +
         "codename or version label. " +
 
         "One more reminder because it matters: wrap ALL code in a fenced " +
@@ -8362,117 +8725,95 @@ async function requestGroq(
         );
 
 
-    const response =
-        await fetch(
-
-            GROQ_ENDPOINT,
+    const fullMessages =
+        [
 
             {
+                role: "system",
+                content: systemPrompt
+            },
 
-                method:
-                    "POST",
+            ...apiMessages
 
-                headers: {
+        ];
 
-                    "Content-Type":
-                        "application/json",
 
-                    "Authorization":
-                        "Bearer " +
-                        GROQ_API_KEY
+    try {
 
-                },
+        const response =
+            await fetch(
 
-                body:
+                "https://api.groq.com/openai/v1/chat/completions",
 
-                    JSON.stringify({
+                {
 
-                        model:
-                            GROQ_MODEL,
+                    method: "POST",
 
-                        messages: [
+                    headers: {
 
-                            {
+                        "Content-Type": "application/json",
 
-                                role:
-                                    "system",
+                        "Authorization": "Bearer " + GROQ_API_KEY
 
-                                content:
-                                    systemPrompt
+                    },
 
-                            },
+                    body: JSON.stringify({
 
-                            ...apiMessages
+                        model: GROQ_MODEL,
 
-                        ],
+                        messages: fullMessages,
 
-                        temperature:
-                            0.5
+                        temperature: 0.5
 
                     })
 
-            }
+                }
 
-        );
-
-
-    if (
-        !response.ok
-    ) {
-
-        let errorMessage =
-            "The AI request failed.";
+            );
 
 
-        try {
+        if (!response.ok) {
 
-            const data =
-                await response.json();
+            const errorText =
+                await response.text();
 
-
-            errorMessage =
-
-                data
-                    ?.error
-                    ?.message
-
-                ||
-
-                errorMessage;
-
-        } catch {
-
-            /* Ignore JSON parsing error. */
+            throw new Error(
+                "Groq API error (" + response.status + "): " + errorText
+            );
 
         }
 
 
+        const data =
+            await response.json();
+
+        const reply =
+
+            data.choices &&
+            data.choices[0] &&
+            data.choices[0].message &&
+            data.choices[0].message.content;
+
+
+        return (
+            reply ||
+            "I wasn't able to generate a response."
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Shard chat request error:",
+            error
+        );
+
+
         throw new Error(
-            errorMessage
+            error.message ||
+            "The AI request failed."
         );
 
     }
-
-
-    const data =
-        await response.json();
-
-
-    return (
-
-        data
-            ?.choices
-            ?.[
-                0
-            ]
-            ?.message
-            ?.content
-
-        ||
-
-        "I wasn't able to generate a response."
-
-    );
 
 }
 
@@ -9765,6 +10106,13 @@ notesTextarea.addEventListener(
 
 /* =========================================================
    STACK
+
+   A small live sandbox. HTML/CSS/JS always run in the
+   always-visible preview + console on the right. Any other
+   language added from the library is just an extra editable
+   file — useful for writing snippets, downloading them, or
+   asking Shard about them — since it can't be executed in a
+   browser preview.
 ========================================================= */
 
 const stackOverlay =
@@ -9782,12 +10130,80 @@ const stackPreview =
         "stackPreview"
     );
 
+const stackConsole =
+    document.getElementById(
+        "stackConsole"
+    );
 
-let currentStackLanguage =
-    "html";
+const stackAutoRunCheckbox =
+    document.getElementById(
+        "stackAutoRun"
+    );
+
+const stackLangTabs =
+    document.getElementById(
+        "stackLangTabs"
+    );
+
+const stackLangLibrary =
+    document.getElementById(
+        "stackLangLibrary"
+    );
 
 
-const stackCode = {
+const STACK_CORE_LANGUAGES = [
+
+    {
+        id: "html",
+        label: "HTML",
+        ext: "html",
+        dotClass: "stack-dot-html"
+    },
+
+    {
+        id: "css",
+        label: "CSS",
+        ext: "css",
+        dotClass: "stack-dot-css"
+    },
+
+    {
+        id: "js",
+        label: "JS",
+        ext: "js",
+        dotClass: "stack-dot-js"
+    }
+
+];
+
+
+const STACK_EXTRA_LANGUAGES = [
+
+    { id: "python", label: "Python", ext: "py", color: "#3572A5", starter: 'print("Hello from Stack!")' },
+    { id: "java", label: "Java", ext: "java", color: "#b07219", starter: 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello from Stack!");\n    }\n}' },
+    { id: "cpp", label: "C++", ext: "cpp", color: "#f34b7d", starter: '#include <iostream>\n\nint main() {\n    std::cout << "Hello from Stack!" << std::endl;\n    return 0;\n}' },
+    { id: "c", label: "C", ext: "c", color: "#a8b9cc", starter: '#include <stdio.h>\n\nint main() {\n    printf("Hello from Stack!\\n");\n    return 0;\n}' },
+    { id: "csharp", label: "C#", ext: "cs", color: "#178600", starter: 'using System;\n\nclass Program {\n    static void Main() {\n        Console.WriteLine("Hello from Stack!");\n    }\n}' },
+    { id: "ruby", label: "Ruby", ext: "rb", color: "#cc342d", starter: 'puts "Hello from Stack!"' },
+    { id: "php", label: "PHP", ext: "php", color: "#8892bf", starter: '<?php\n\necho "Hello from Stack!";' },
+    { id: "go", label: "Go", ext: "go", color: "#00ADD8", starter: 'package main\n\nimport "fmt"\n\nfunc main() {\n    fmt.Println("Hello from Stack!")\n}' },
+    { id: "rust", label: "Rust", ext: "rs", color: "#dea584", starter: 'fn main() {\n    println!("Hello from Stack!");\n}' },
+    { id: "swift", label: "Swift", ext: "swift", color: "#F05138", starter: 'print("Hello from Stack!")' },
+    { id: "kotlin", label: "Kotlin", ext: "kt", color: "#A97BFF", starter: 'fun main() {\n    println("Hello from Stack!")\n}' },
+    { id: "typescript", label: "TypeScript", ext: "ts", color: "#3178c6", starter: 'console.log("Hello from Stack!");' },
+    { id: "sql", label: "SQL", ext: "sql", color: "#e38c00", starter: "SELECT 'Hello from Stack!' AS message;" },
+    { id: "bash", label: "Bash", ext: "sh", color: "#89e051", starter: 'echo "Hello from Stack!"' },
+    { id: "json", label: "JSON", ext: "json", color: "#cbcb41", starter: '{\n  "message": "Hello from Stack!"\n}' },
+    { id: "markdown", label: "Markdown", ext: "md", color: "#e8e8e8", starter: "# Hello from Stack!" },
+    { id: "yaml", label: "YAML", ext: "yml", color: "#cb171e", starter: "message: Hello from Stack!" },
+    { id: "lua", label: "Lua", ext: "lua", color: "#8199c7", starter: 'print("Hello from Stack!")' },
+    { id: "perl", label: "Perl", ext: "pl", color: "#0298c3", starter: 'print "Hello from Stack!\\n";' },
+    { id: "r", label: "R", ext: "r", color: "#198CE7", starter: 'cat("Hello from Stack!\\n")' }
+
+];
+
+
+const STACK_DEFAULTS = {
 
     html:
 
@@ -9815,6 +10231,39 @@ h1 {
 };
 
 
+let currentStackLanguage =
+    "html";
+
+let stackCode = {
+    html: STACK_DEFAULTS.html,
+    css: STACK_DEFAULTS.css,
+    js: STACK_DEFAULTS.js
+};
+
+let activeStackTabs =
+    ["html", "css", "js"];
+
+let stackAutoRunTimer =
+    null;
+
+
+function getStackLanguageMeta(id) {
+
+    return (
+
+        STACK_CORE_LANGUAGES.find(l => l.id === id) ||
+        STACK_EXTRA_LANGUAGES.find(l => l.id === id) ||
+        null
+
+    );
+
+}
+
+
+stackEditor.value =
+    stackCode[currentStackLanguage];
+
+
 document
     .getElementById(
         "stackButton"
@@ -9832,6 +10281,8 @@ document
             switchStackLanguage(
                 "html"
             );
+
+            renderStackPreview();
 
         }
 
@@ -9852,18 +10303,86 @@ document
                 "stackOverlay"
             );
 
+            closeStackLibrary();
+
         }
 
     );
 
 
-document
-    .querySelectorAll(
-        ".stack-tab"
-    )
-    .forEach(
+function renderStackTabs() {
 
-        function(tab) {
+    stackLangTabs.innerHTML =
+        "";
+
+
+    activeStackTabs.forEach(
+
+        function(id) {
+
+            const meta =
+                getStackLanguageMeta(id);
+
+            if (!meta) {
+                return;
+            }
+
+
+            const isCore =
+                STACK_CORE_LANGUAGES.some(
+                    l => l.id === id
+                );
+
+
+            const tab =
+                document.createElement(
+                    "button"
+                );
+
+            tab.className =
+                "stack-tab" +
+                (
+                    id === currentStackLanguage
+                        ? " active"
+                        : ""
+                ) +
+                (
+                    isCore
+                        ? ""
+                        : " removable"
+                );
+
+            tab.dataset.language =
+                id;
+
+
+            const dot =
+                document.createElement(
+                    "span"
+                );
+
+            dot.className =
+                "stack-tab-dot " +
+                (meta.dotClass || "");
+
+            if (!meta.dotClass) {
+
+                dot.style.background =
+                    meta.color;
+
+            }
+
+
+            tab.appendChild(
+                dot
+            );
+
+            tab.appendChild(
+                document.createTextNode(
+                    meta.label
+                )
+            );
+
 
             tab.addEventListener(
 
@@ -9871,20 +10390,263 @@ document
 
                 function() {
 
-                    const language =
-                        tab.dataset.language;
+                    switchStackLanguage(
+                        id
+                    );
+
+                }
+
+            );
 
 
-                    if (
-                        language === "preview"
-                    ) {
+            if (!isCore) {
 
-                        showStackPreview();
+                const removeButton =
+                    document.createElement(
+                        "span"
+                    );
+
+                removeButton.className =
+                    "stack-tab-remove";
+
+                removeButton.textContent =
+                    "✕";
+
+                removeButton.addEventListener(
+
+                    "click",
+
+                    function(event) {
+
+                        event.stopPropagation();
+
+                        removeStackLanguage(
+                            id
+                        );
+
+                    }
+
+                );
+
+                tab.appendChild(
+                    removeButton
+                );
+
+            }
+
+
+            stackLangTabs.appendChild(
+                tab
+            );
+
+        }
+
+    );
+
+}
+
+
+function switchStackLanguage(language) {
+
+    /*
+        Persist whatever's currently on screen into its own
+        language slot before switching — the editor is always
+        showing exactly one language, and this keeps the
+        others safe from being overwritten by it.
+    */
+
+    stackCode[
+        currentStackLanguage
+    ] =
+        stackEditor.value;
+
+
+    currentStackLanguage =
+        language;
+
+
+    stackEditor.value =
+        stackCode[language] || "";
+
+
+    renderStackTabs();
+
+
+    /*
+        If an edit just before switching left an auto-run
+        update pending, flush it right away instead of leaving
+        the preview to catch up later (or not at all).
+    */
+
+    if (
+        stackAutoRunTimer &&
+        stackAutoRunCheckbox.checked
+    ) {
+
+        renderStackPreview();
+
+    }
+
+}
+
+
+function addStackLanguage(id) {
+
+    const meta =
+        getStackLanguageMeta(id);
+
+    if (!meta) {
+        return;
+    }
+
+
+    if (!activeStackTabs.includes(id)) {
+
+        activeStackTabs.push(
+            id
+        );
+
+        stackCode[id] =
+            meta.starter || "";
+
+    }
+
+
+    switchStackLanguage(
+        id
+    );
+
+    renderStackLibrary();
+
+}
+
+
+function removeStackLanguage(id) {
+
+    activeStackTabs =
+        activeStackTabs.filter(
+
+            tabId =>
+                tabId !== id
+
+        );
+
+    delete stackCode[id];
+
+
+    if (currentStackLanguage === id) {
+
+        switchStackLanguage(
+            "html"
+        );
+
+    } else {
+
+        renderStackTabs();
+
+    }
+
+
+    renderStackLibrary();
+
+}
+
+
+function renderStackLibrary() {
+
+    stackLangLibrary.innerHTML =
+        "";
+
+
+    STACK_EXTRA_LANGUAGES.forEach(
+
+        function(lang) {
+
+            const isAdded =
+                activeStackTabs.includes(
+                    lang.id
+                );
+
+
+            const option =
+                document.createElement(
+                    "button"
+                );
+
+            option.type =
+                "button";
+
+            option.className =
+                "stack-lang-option" +
+                (
+                    isAdded
+                        ? " added"
+                        : ""
+                );
+
+
+            const dot =
+                document.createElement(
+                    "span"
+                );
+
+            dot.className =
+                "stack-tab-dot";
+
+            dot.style.background =
+                lang.color;
+
+
+            const label =
+                document.createElement(
+                    "span"
+                );
+
+            label.textContent =
+                lang.label;
+
+
+            const check =
+                document.createElement(
+                    "span"
+                );
+
+            check.className =
+                "stack-lang-option-check";
+
+            check.textContent =
+                "✓";
+
+
+            option.appendChild(
+                dot
+            );
+
+            option.appendChild(
+                label
+            );
+
+            option.appendChild(
+                check
+            );
+
+
+            option.addEventListener(
+
+                "click",
+
+                function() {
+
+                    if (isAdded) {
+
+                        removeStackLanguage(
+                            lang.id
+                        );
 
                     } else {
 
-                        switchStackLanguage(
-                            language
+                        addStackLanguage(
+                            lang.id
                         );
 
                     }
@@ -9893,50 +10655,69 @@ document
 
             );
 
+
+            stackLangLibrary.appendChild(
+                option
+            );
+
+        }
+
+    );
+
+}
+
+
+function closeStackLibrary() {
+
+    stackLangLibrary.classList.remove(
+        "visible"
+    );
+
+}
+
+
+document
+    .getElementById(
+        "stackAddLangButton"
+    )
+    .addEventListener(
+
+        "click",
+
+        function(event) {
+
+            event.stopPropagation();
+
+            renderStackLibrary();
+
+            stackLangLibrary.classList.toggle(
+                "visible"
+            );
+
         }
 
     );
 
 
-function switchStackLanguage(language) {
+document.addEventListener(
 
-    currentStackLanguage =
-        language;
+    "click",
 
+    function(event) {
 
-    document
-        .querySelectorAll(
-            ".stack-tab"
-        )
-        .forEach(
+        if (
+            !event.target.closest(
+                ".stack-add-lang"
+            )
+        ) {
 
-            function(tab) {
+            closeStackLibrary();
 
-                tab.classList.toggle(
+        }
 
-                    "active",
+    }
 
-                    tab.dataset.language ===
-                    language
-
-                );
-
-            }
-
-        );
-
-
-    stackEditor.style.display =
-        "block";
-
-    stackPreview.style.display =
-        "none";
-
-
-    stackEditor.value =
-        stackCode[language] || "";
-
-}
+);
 
 
 stackEditor.addEventListener(
@@ -9950,77 +10731,191 @@ stackEditor.addEventListener(
         ] =
             stackEditor.value;
 
+
+        if (stackAutoRunCheckbox.checked) {
+
+            clearTimeout(
+                stackAutoRunTimer
+            );
+
+            stackAutoRunTimer =
+                setTimeout(
+
+                    renderStackPreview,
+
+                    500
+
+                );
+
+        }
+
     }
 
 );
 
 
-function showStackPreview() {
+function buildStackDocument(withConsoleBridge) {
 
-    stackCode.html =
-        stackEditor.value;
+    const consoleBridge =
+        withConsoleBridge
+
+            ? `<script>
+(function() {
+    function relay(level, args) {
+        try {
+            parent.postMessage({
+                __stackConsole: true,
+                level: level,
+                message: Array.prototype.map.call(args, function(a) {
+                    try {
+                        return typeof a === "object" ? JSON.stringify(a) : String(a);
+                    } catch (e) {
+                        return String(a);
+                    }
+                }).join(" ")
+            }, "*");
+        } catch (e) {}
+    }
+    ["log", "warn", "error", "info"].forEach(function(level) {
+        const original = console[level];
+        console[level] = function() {
+            relay(level, arguments);
+            original.apply(console, arguments);
+        };
+    });
+    window.addEventListener("error", function(e) {
+        relay("error", [e.message + " (line " + e.lineno + ")"]);
+    });
+})();
+<\/script>`
+
+            : "";
 
 
-    document
-        .querySelectorAll(
-            ".stack-tab"
-        )
-        .forEach(
+    return `<!DOCTYPE html>
+<html>
+<head>
+${consoleBridge}
+<style>
+${stackCode.css || ""}
+</style>
+</head>
+<body>
+${stackCode.html || ""}
+<script>
+${stackCode.js || ""}
+<\/script>
+</body>
+</html>`;
 
-            function(tab) {
+}
 
-                tab.classList.toggle(
 
-                    "active",
+function clearStackConsole() {
 
-                    tab.dataset.language ===
-                    "preview"
+    stackConsole.innerHTML =
 
-                );
+        '<div class="stack-console-empty">' +
+        'Console output will show up here.' +
+        '</div>';
 
-            }
+}
 
+
+function appendStackConsoleLine(level, message) {
+
+    const empty =
+        stackConsole.querySelector(
+            ".stack-console-empty"
         );
 
+    if (empty) {
 
-    stackEditor.style.display =
-        "none";
+        empty.remove();
 
-    stackPreview.style.display =
-        "block";
+    }
 
 
-    stackPreview.srcdoc = `
+    const line =
+        document.createElement("div");
 
-<!DOCTYPE html>
+    line.className =
+        "stack-console-line level-" + level;
 
-<html>
+    line.textContent =
+        message;
 
-<head>
+    stackConsole.appendChild(
+        line
+    );
 
-<style>
+    stackConsole.scrollTop =
+        stackConsole.scrollHeight;
 
-${stackCode.css || ""}
+}
 
-</style>
 
-</head>
+window.addEventListener(
 
-<body>
+    "message",
 
-${stackCode.html || ""}
+    function(event) {
 
-<script>
+        if (
+            event.data &&
+            event.data.__stackConsole
+        ) {
 
-${stackCode.js || ""}
+            appendStackConsoleLine(
 
-<\/script>
+                event.data.level,
 
-</body>
+                event.data.message
 
-</html>
+            );
 
-`;
+        }
+
+    }
+
+);
+
+
+function renderStackPreview() {
+
+    clearTimeout(
+        stackAutoRunTimer
+    );
+
+    clearStackConsole();
+
+
+    const previewDoc =
+        buildStackDocument(true);
+
+
+    /*
+        Reassigning iframe.srcdoc to new content back-to-back
+        (e.g. right after switching tabs mid-debounce) can get
+        silently dropped by some browsers, leaving the preview
+        stuck on stale content. Clearing it first, then setting
+        the real content on the next frame, forces the browser
+        to treat it as a genuinely fresh navigation every time.
+    */
+
+    stackPreview.srcdoc =
+        "";
+
+    window.requestAnimationFrame(
+
+        function() {
+
+            stackPreview.srcdoc =
+                previewDoc;
+
+        }
+
+    );
 
 }
 
@@ -10033,14 +10928,14 @@ document
 
         "click",
 
-        showStackPreview
+        renderStackPreview
 
     );
 
 
 document
     .getElementById(
-        "stackClear"
+        "stackReset"
     )
     .addEventListener(
 
@@ -10048,13 +10943,279 @@ document
 
         function() {
 
+            stackCode = {
+                html: STACK_DEFAULTS.html,
+                css: STACK_DEFAULTS.css,
+                js: STACK_DEFAULTS.js
+            };
+
+            activeStackTabs =
+                ["html", "css", "js"];
+
+            currentStackLanguage =
+                "html";
+
             stackEditor.value =
-                "";
+                stackCode.html;
+
+            renderStackTabs();
+
+            renderStackPreview();
+
+        }
+
+    );
+
+
+function currentStackFileMeta() {
+
+    return (
+
+        getStackLanguageMeta(
+            currentStackLanguage
+        )
+
+        ||
+
+        { ext: "txt" }
+
+    );
+
+}
+
+
+function downloadBlob(content, filename, mimeType) {
+
+    const blob =
+        new Blob(
+
+            [content],
+
+            {
+                type: mimeType || "text/plain"
+            }
+
+        );
+
+
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+    const link =
+        document.createElement("a");
+
+    link.href =
+        url;
+
+    link.download =
+        filename;
+
+    document.body.appendChild(
+        link
+    );
+
+    link.click();
+
+    link.remove();
+
+
+    URL.revokeObjectURL(
+        url
+    );
+
+}
+
+
+document
+    .getElementById(
+        "stackDownload"
+    )
+    .addEventListener(
+
+        "click",
+
+        function() {
 
             stackCode[
                 currentStackLanguage
             ] =
-                "";
+                stackEditor.value;
+
+
+            const isCore =
+                STACK_CORE_LANGUAGES.some(
+
+                    l =>
+                        l.id === currentStackLanguage
+
+                );
+
+
+            if (isCore) {
+
+                downloadBlob(
+
+                    buildStackDocument(false),
+
+                    "stack.html",
+
+                    "text/html"
+
+                );
+
+            } else {
+
+                const meta =
+                    currentStackFileMeta();
+
+                downloadBlob(
+
+                    stackCode[currentStackLanguage] || "",
+
+                    "stack." + meta.ext,
+
+                    "text/plain"
+
+                );
+
+            }
+
+        }
+
+    );
+
+
+document
+    .getElementById(
+        "stackOpenNewTab"
+    )
+    .addEventListener(
+
+        "click",
+
+        function() {
+
+            stackCode[
+                currentStackLanguage
+            ] =
+                stackEditor.value;
+
+
+            const blob =
+                new Blob(
+
+                    [
+                        buildStackDocument(false)
+                    ],
+
+                    {
+                        type: "text/html"
+                    }
+
+                );
+
+
+            const url =
+                URL.createObjectURL(
+                    blob
+                );
+
+
+            window.open(
+                url,
+                "_blank"
+            );
+
+        }
+
+    );
+
+
+document
+    .getElementById(
+        "stackAskMist"
+    )
+    .addEventListener(
+
+        "click",
+
+        function() {
+
+            stackCode[
+                currentStackLanguage
+            ] =
+                stackEditor.value;
+
+
+            const parts =
+                activeStackTabs
+
+                    .map(
+
+                        function(id) {
+
+                            const content =
+                                (stackCode[id] || "").trim();
+
+
+                            if (!content) {
+                                return "";
+                            }
+
+
+                            const meta =
+                                getStackLanguageMeta(id);
+
+                            const fenceLang =
+                                id === "js"
+                                    ? "javascript"
+                                    : id;
+
+
+                            return (
+                                "**" + meta.label + "**\n" +
+                                "```" + fenceLang + "\n" +
+                                content +
+                                "\n```"
+                            );
+
+                        }
+
+                    )
+
+                    .filter(
+
+                        part =>
+                            part !== ""
+
+                    );
+
+
+            if (!parts.length) {
+                return;
+            }
+
+
+            const message =
+
+                "Here's the code I'm working on in Stack — " +
+                "could you take a look and share any thoughts, " +
+                "bugs, or improvements?\n\n" +
+                parts.join("\n\n");
+
+
+            closeOverlay(
+                "stackOverlay"
+            );
+
+            closeStackLibrary();
+
+
+            sendMessage(
+                message
+            );
 
         }
 
@@ -10858,7 +12019,7 @@ function updateModelSelectorUI() {
 
 
             instance.dropdown.innerHTML =
-                MIST_MODELS
+                SHARD_MODELS
 
                     .map(
 
@@ -11406,6 +12567,11 @@ centerInput.focus();
         setDoc
     } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-firestore.js";
 
+    import {
+        getFunctions,
+        httpsCallable
+    } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-functions.js";
+
 
     /* =========================================================
        FIREBASE CONFIGURATION
@@ -11433,6 +12599,42 @@ centerInput.focus();
 
     const db =
         getFirestore(firebaseApp);
+
+    const functionsInstance =
+        getFunctions(firebaseApp);
+
+    const chatCallable =
+        httpsCallable(functionsInstance, "chat");
+
+
+    /* =========================================================
+       CHAT PROXY
+
+       Exposed on window so the main (non-module) app script can
+       call the Cloud Function without needing its own Firebase
+       imports. The Groq API key never reaches the browser — it
+       only ever lives in the Cloud Function's environment.
+    ========================================================= */
+
+    window.mistChat = function(messages, model, temperature) {
+
+        return chatCallable({
+
+            messages: messages,
+            model: model,
+            temperature: temperature
+
+        }).then(
+
+            function(result) {
+
+                return result.data.reply;
+
+            }
+
+        );
+
+    };
 
 
     /* =========================================================
